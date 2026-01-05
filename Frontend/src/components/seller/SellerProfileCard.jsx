@@ -19,7 +19,7 @@ export function SellerProfileCard() {
         <div className="-mt-12 flex flex-col items-center text-center sm:flex-row sm:items-end sm:text-left">
           <div className="relative">
             <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face"
+              src="/assets/pravin2.png"
               alt="James Wilson"
               className="h-24 w-24 rounded-2xl border-4 border-card object-cover shadow-lg"
             />
@@ -32,7 +32,7 @@ export function SellerProfileCard() {
             <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-start">
               <div>
                 <h2 className="text-xl font-semibold text-foreground">
-                  James Wilson
+                  Pravin Purav
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   Verified Property Agent
@@ -46,7 +46,7 @@ export function SellerProfileCard() {
             <div className="mt-3 flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground sm:justify-start">
               <div className="flex items-center gap-1.5">
                 <MapPin className="h-4 w-4" />
-                <span>Miami, FL</span>
+                <span>Andheri, Mumbai</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Star className="h-4 w-4 fill-warning text-warning" />

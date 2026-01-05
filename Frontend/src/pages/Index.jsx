@@ -144,7 +144,7 @@ const Index = () => {
                 Dashboard
               </h1>
               <p className="hidden text-sm text-muted-foreground sm:block">
-                Welcome back, James!
+                Welcome back, Pravin!
               </p>
             </div>
           </div>

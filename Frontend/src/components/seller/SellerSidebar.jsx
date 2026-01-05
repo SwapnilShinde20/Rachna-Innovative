@@ -44,7 +44,7 @@ export function SellerSidebar({ activeItem, onItemClick }) {
               <Building2 className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="text-lg font-semibold text-foreground">
-              EstateEase
+              Rachna Innovative
             </span>
           </Link>
         )}
@@ -69,7 +69,7 @@ export function SellerSidebar({ activeItem, onItemClick }) {
         <div className={cn("flex items-center gap-3", collapsed && "flex-col")}>
           <div className="relative">
             <img
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face"
+              src="/assets/pravin.png"
               alt="Seller"
               className="h-10 w-10 rounded-full object-cover ring-2 ring-primary/20"
             />
@@ -79,7 +79,7 @@ export function SellerSidebar({ activeItem, onItemClick }) {
           {!collapsed && (
             <div className="flex-1 overflow-hidden">
               <p className="truncate text-sm font-medium text-foreground">
-                James Wilson
+                Pravin Purav
               </p>
               <p className="truncate text-xs text-muted-foreground">
                 Verified Agent

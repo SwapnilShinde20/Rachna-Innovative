@@ -153,7 +153,7 @@ const LandingPage = () => {
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
               <Building2 className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-semibold text-foreground">EstateEase</span>
+            <span className="text-xl font-semibold text-foreground">Rachna Innovative</span>
           </Link>
           
           <div className="hidden items-center gap-6 md:flex">
@@ -479,16 +479,16 @@ const LandingPage = () => {
             <div>
               <h4 className="mb-4 font-semibold text-foreground">Contact Us</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>hello@estateease.com</li>
+                <li>hello@rachnainnovative.com</li>
                 <li>+1 (555) 123-4567</li>
-                <li>Miami, Florida</li>
+                <li>Andheri, Mumbai</li>
               </ul>
             </div>
           </div>
 
           <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
             <p className="text-sm text-muted-foreground">
-              © 2024 EstateEase. All rights reserved.
+              © 2026 RachnaInnovative. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm text-muted-foreground">
               <a href="#" className="hover:text-foreground">Privacy Policy</a>

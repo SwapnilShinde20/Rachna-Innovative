@@ -6,9 +6,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Buyer from "./pages/Purchase";
+import PropertyDetails from "./pages/PropertyDetails";
 
 const queryClient = new QueryClient();
-
+const role = "buyer";
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
