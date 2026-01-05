@@ -165,7 +165,7 @@ const LandingPage = () => {
 
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" asChild>
-              <Link to="/dashboard">Sign In</Link>
+              <Link to="/buy">Sign In</Link>
             </Button>
             <Button size="sm" asChild>
               <Link to="/dashboard">Get Started</Link>

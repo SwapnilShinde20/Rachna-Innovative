@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Buyer from "./pages/Purchase";
+import Purchase from "./pages/Purchase";
 import PropertyDetails from "./pages/PropertyDetails";
 
 const queryClient = new QueryClient();
@@ -19,7 +19,13 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/dashboard" element={<Index />} />
+          <Route path="/buy" element={<Purchase />} />
+          <Route path="/rent" element={<Purchase />} />
+          <Route path="/favorites" element={<Purchase />} />
+          <Route path="/help" element={<Purchase />} />
+          <Route path="/services" element={<Purchase />} />
+          <Route path="/blogs" element={<Purchase />} />
+          <Route path="/dashboard" element={< Index/> } />
           <Route path="/dashboard/listings" element={<Index />} />
           <Route path="/dashboard/add" element={<Index />} />
           <Route path="/dashboard/leads" element={<Index />} />
