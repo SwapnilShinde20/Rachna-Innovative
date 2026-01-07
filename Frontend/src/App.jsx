@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Purchase from "./pages/Purchase";
 import PropertyDetails from "./pages/PropertyDetails";
+import Service from "./pages/buyer/Service";
 
 const queryClient = new QueryClient();
 const role = "buyer";
@@ -23,7 +24,7 @@ const App = () => (
           <Route path="/rent" element={<Purchase />} />
           <Route path="/favorites" element={<Purchase />} />
           <Route path="/help" element={<Purchase />} />
-          <Route path="/services" element={<Purchase />} />
+          <Route path="/services/:value" element={<Service/>} />
           <Route path="/blogs" element={<Purchase />} />
           <Route path="/dashboard" element={< Index/> } />
           <Route path="/dashboard/listings" element={<Index />} />

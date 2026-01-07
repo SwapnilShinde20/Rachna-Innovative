@@ -1,35 +1,27 @@
-import React from "react";
-import { Search, MessageSquare, Bell, X, Home, House, ChevronDown } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import React, { useState } from "react";
+import {
+  Search,
+  MessageSquare,
+  Bell,
+  X,
+  House,
+  ChevronDown,
+} from "lucide-react";
+import { NavLink, Link } from "react-router-dom";
 import "remixicon/fonts/remixicon.css";
 
 const navItems = [
-  {
-    name: "Buy",
-    link: "/buy",
-  },
-  {
-    name: "Rent",
-    link: "/rent",
-  },
-  {
-    name: "Favorites",
-    link: "/favorites",
-  },
-  {
-    name: "Help",
-    link: "/help",
-  },
-  {
-    name: "Services",
-    link: "/services",
-  },
-  {
-    name: "Blog",
-    link: "/blogs",
-  },
+  { name: "Buy", link: "/buy" },
+  { name: "Rent", link: "/rent" },
+  { name: "Favorites", link: "/favorites" },
+  { name: "Help", link: "/help" },
+  { name: "Services", link: "/services", hasDropdown: true }, // Added flag
+  { name: "Blog", link: "/blogs" },
 ];
+
 const Navbar = () => {
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
+
   return (
     <nav className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-100 sticky top-0 z-50 font-inter">
       {/* Logo */}
@@ -46,17 +38,74 @@ const Navbar = () => {
 
       {/* Center Nav */}
       <div className="hidden md:flex bg-[#F6F8FA] rounded-full p-1 gap-1 border border-[#E4E4E4]">
-        {navItems.map((item) => (
-          <NavLink
-            to={item.link}
-            className={({ isActive }) =>
-              isActive ? " px-5 py-2   rounded-full bg-white border border-[#E4E4E4] shadow-sm text-[#1F52D6] font-medium text-sm" : "px-5 py-2 rounded-full text-gray-500 hover:text-gray-900 font-medium text-sm"
-            }
-          >
-            {item.name}
-          </NavLink>
-        ))}
+        {navItems.map((item) => {
+          if (item.hasDropdown) {
+            return (
+              <div
+                key={item.name}
+                className="relative"
+                onMouseEnter={() => setIsServicesOpen(true)}
+                onMouseLeave={() => setIsServicesOpen(false)}
+              >
+                <NavLink
+                  to={item.link}
+                  className={({ isActive }) =>
+                    isActive
+                      ? "px-5 py-2 rounded-full bg-white border border-[#E4E4E4] shadow-sm text-[#1F52D6] font-medium text-sm flex items-center gap-1"
+                      : "px-5 py-2 rounded-full text-gray-500 hover:text-gray-900 font-medium text-sm flex items-center gap-1"
+                  }
+                >
+                  {item.name}
+                  <ChevronDown
+                    size={14}
+                    className={`transition-transform duration-200 ${
+                      isServicesOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </NavLink>
 
+                {/* Dropdown Menu */}
+                {/* Dropdown Menu */}
+                {isServicesOpen && (
+                  <div
+                    className="absolute top-[80%] left-0 w-48 pt-4 z-50" // Bridge the gap with pt-4
+                    onMouseEnter={() => setIsServicesOpen(true)}
+                    onMouseLeave={() => setIsServicesOpen(false)}
+                  >
+                    <div className="bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden p-1">
+                      <Link
+                        to="/services/legal"
+                        className="block px-4 py-2 text-sm text-gray-600 hover:bg-[#F6F8FA] hover:text-[#1F52D6] rounded-lg transition-colors"
+                      >
+                        Legal Support
+                      </Link>
+                      <Link
+                        to="/services/security"
+                        className="block px-4 py-2 text-sm text-gray-600 hover:bg-[#F6F8FA] hover:text-[#1F52D6] rounded-lg transition-colors"
+                      >
+                        Security & Privacy
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          }
+
+          return (
+            <NavLink
+              key={item.name}
+              to={item.link}
+              className={({ isActive }) =>
+                isActive
+                  ? "px-5 py-2 rounded-full bg-white border border-[#E4E4E4] shadow-sm text-[#1F52D6] font-medium text-sm"
+                  : "px-5 py-2 rounded-full text-gray-500 hover:text-gray-900 font-medium text-sm"
+              }
+            >
+              {item.name}
+            </NavLink>
+          );
+        })}
       </div>
 
       {/* Right Actions */}
@@ -84,13 +133,15 @@ const Navbar = () => {
           <img
             src="/assets/pravin.png"
             alt="Profile"
-            className="w-12 h-12  rounded-full object-cover border border-[#E4E4E4] "
+            className="w-12 h-12 rounded-full object-cover border border-[#E4E4E4]"
           />
           <div className="hidden xl:block">
-            <p className="text-base text-[#111827] font-semibold text-gray-900">Pravin Purav</p>
+            <p className="text-base text-[#111827] font-semibold text-gray-900">
+              Pravin Purav
+            </p>
             <p className="text-xs text-[#4B5563]">pravin@gmail.com</p>
           </div>
-          <ChevronDown />
+          <ChevronDown className="text-gray-400" size={20} />
         </div>
       </div>
     </nav>
