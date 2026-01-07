@@ -10,7 +10,8 @@ import {
   MapPin,
   Building2,
   Handshake,
-  CheckCircle2
+  CheckCircle2,
+  House
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -149,12 +150,16 @@ const LandingPage = () => {
       {/* Navigation */}
       <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-sm">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 lg:px-6">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-              <Building2 className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-semibold text-foreground">Rachna Innovative</span>
-          </Link>
+          <div className="flex items-center gap-2">
+                  <div className="bg-gray-900 text-white p-2 rounded-lg w-[40px] h-[40px] flex justify-center items-center">
+                    <House className="font-bold" size={20} />
+                  </div>
+                  <div className="font-bold text-lg leading-tight">
+                    Rachna
+                    <br />
+                    Innovative
+                  </div>
+                </div>
           
           <div className="hidden items-center gap-6 md:flex">
             <a href="#properties" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Properties</a>
@@ -165,10 +170,10 @@ const LandingPage = () => {
 
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="sm" asChild>
-              <Link to="/buy">Sign In</Link>
+              <Link to="/buy">Buyer</Link>
             </Button>
             <Button size="sm" asChild>
-              <Link to="/dashboard">Get Started</Link>
+              <Link to="/dashboard">Seller</Link>
             </Button>
           </div>
         </div>

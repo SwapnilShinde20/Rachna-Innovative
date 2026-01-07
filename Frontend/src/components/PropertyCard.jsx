@@ -2,11 +2,12 @@ import React from 'react'
 import { 
   Star
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 
 const PropertyCard = ({ property }) => {
   return (
-    <div className="group relative h-80 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+    <Link className="group relative h-80 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300" to='/buy/1'>
       {/* Background Image */}
       <img 
         src={property.image} 
@@ -41,7 +42,7 @@ const PropertyCard = ({ property }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

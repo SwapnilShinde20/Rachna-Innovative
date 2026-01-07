@@ -21,6 +21,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/buy" element={<Purchase />} />
+          <Route path="/buy/:id" element={<PropertyDetails />} />
           <Route path="/rent" element={<Purchase />} />
           <Route path="/favorites" element={<Purchase />} />
           <Route path="/help" element={<Purchase />} />
