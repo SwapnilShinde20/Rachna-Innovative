@@ -6,6 +6,65 @@
 
 @layer base {
   :root {
+    /* 🔵 Primary / Blue */
+    --primary-blue-50:  #F2F7FF;
+    --primary-blue-100: #E6EFFF;
+    --primary-blue-200: #CFE0FF;
+    --primary-blue-300: #9FC1FF;
+    --primary-blue-400: #5A8DFF;
+    --primary-blue-500: #2F6BFF;
+    --primary-blue-600: #1F52D6;
+    --primary-blue-700: #183EAA;
+    --primary-blue-800: #122E80;
+    --primary-blue-900: #0C1F55;
+
+    /* ⚪ Neutral / Gray */
+    --neutral-gray-50:  #F9FAFB;
+    --neutral-gray-100: #F1F3F5;
+    --neutral-gray-200: #E5E7EB;
+    --neutral-gray-300: #D1D5DB;
+    --neutral-gray-400: #9CA3AF;
+    --neutral-gray-500: #6B7280;
+    --neutral-gray-600: #4B5563;
+    --neutral-gray-700: #374151;
+    --neutral-gray-800: #1F2937;
+    --neutral-gray-900: #111827;
+
+    /* ⚫ Text / Charcoal */
+    --charcoal-50:  #F8F9FA;
+    --charcoal-100: #EDEFF2;
+    --charcoal-200: #D1D5DB;
+    --charcoal-300: #9CA3AF;
+    --charcoal-400: #6B7280;
+    --charcoal-500: #374151;
+    --charcoal-600: #1F2937;
+    --charcoal-700: #111827;
+    --charcoal-800: #0B0F19;
+    --charcoal-900: #05070C;
+
+    /* ⭐ Accent / Yellow */
+    --accent-yellow-50:  #FFFBEB;
+    --accent-yellow-100: #FEF3C7;
+    --accent-yellow-200: #FDE68A;
+    --accent-yellow-300: #FCD34D;
+    --accent-yellow-400: #FBBF24;
+    --accent-yellow-500: #F59E0B;
+    --accent-yellow-600: #D97706;
+    --accent-yellow-700: #B45309;
+    --accent-yellow-800: #92400E;
+    --accent-yellow-900: #78350F;
+
+    /* 🌿 Success / Green */
+    --success-green-50:  #ECFDF5;
+    --success-green-100: #D1FAE5;
+    --success-green-200: #A7F3D0;
+    --success-green-300: #6EE7B7;
+    --success-green-400: #34D399;
+    --success-green-500: #10B981;
+    --success-green-600: #059669;
+    --success-green-700: #047857;
+    --success-green-800: #065F46;
+    --success-green-900: #064E3B;
     --background: 40 33% 99%;
     --foreground: 222 47% 11%;
 

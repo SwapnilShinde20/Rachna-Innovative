@@ -11,6 +11,8 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  House,
+  X, // Added X icon for mobile close
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,14 +27,25 @@ const menuItems = [
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
-export function SellerSidebar({ activeItem, onItemClick }) {
+// Added isOpen and onClose props
+export function SellerSidebar({ activeItem, onItemClick, isOpen, onClose }) {
   const [collapsed, setCollapsed] = useState(false);
+
+  // Helper to handle item click (close menu on mobile)
+  const handleItemClick = (id) => {
+    onItemClick(id);
+    if (window.innerWidth < 1024) {
+      onClose();
+    }
+  };
 
   return (
     <aside
       className={cn(
-        "fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-border/50 bg-card transition-all duration-300",
-        "max-lg:hidden",
+        "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border/50 bg-card transition-transform duration-300 ease-in-out",
+        // Modified: Removed 'max-lg:hidden'
+        // Added: logic to slide in/out on mobile, always visible on desktop (lg)
+        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         collapsed ? "w-20" : "w-64"
       )}
     >
@@ -40,23 +53,33 @@ export function SellerSidebar({ activeItem, onItemClick }) {
       <div className="flex h-16 items-center justify-between border-b border-border/50 px-4">
         {!collapsed && (
           <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-              <Building2 className="h-5 w-5 text-primary-foreground" />
+            <div className="bg-gray-900 text-white p-2 rounded-lg w-[40px] h-[40px] flex justify-center items-center">
+              <House className="font-bold" size={20} />
             </div>
-            <span className="text-lg font-semibold text-foreground">
-              Rachna Innovative
-            </span>
+            <div className="font-bold text-lg leading-tight">
+              Rachna
+              <br />
+              Innovative
+            </div>
           </Link>
         )}
 
         {collapsed && (
           <Link
             to="/"
-            className="mx-auto flex h-9 w-9 items-center justify-center rounded-xl bg-primary"
+            className="mx-auto flex h-9 w-9 items-center justify-center rounded-xl bg-gray-900"
           >
-            <Building2 className="h-5 w-5 text-primary-foreground" />
+            <House className="h-5 w-5 text-primary-foreground" />
           </Link>
         )}
+        
+        {/* Mobile Close Button (Visible only on mobile) */}
+        <button 
+          onClick={onClose} 
+          className="lg:hidden p-1 text-muted-foreground hover:text-foreground"
+        >
+          <X size={20} />
+        </button>
       </div>
 
       {/* Profile Mini */}
@@ -98,7 +121,7 @@ export function SellerSidebar({ activeItem, onItemClick }) {
           return (
             <button
               key={item.id}
-              onClick={() => onItemClick(item.id)}
+              onClick={() => handleItemClick(item.id)}
               className={cn(
                 "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
                 isActive
@@ -114,8 +137,8 @@ export function SellerSidebar({ activeItem, onItemClick }) {
         })}
       </nav>
 
-      {/* Collapse Button */}
-      <div className="border-t border-border/50 p-3">
+      {/* Collapse Button (Hidden on Mobile usually, but kept for consistency) */}
+      <div className="border-t border-border/50 p-3 hidden lg:block">
         <Button
           variant="ghost"
           size="sm"
@@ -148,6 +171,21 @@ export function SellerSidebar({ activeItem, onItemClick }) {
             </Link>
           </Button>
         )}
+      </div>
+      
+      {/* Mobile Only Sign Out (Icon only to save space or full width if needed) */}
+      <div className="border-t border-border/50 p-3 lg:hidden">
+         <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start text-muted-foreground hover:text-destructive"
+            asChild
+          >
+            <Link to="/">
+              <LogOut className="h-4 w-4" />
+              <span>Sign Out</span>
+            </Link>
+          </Button>
       </div>
     </aside>
   );

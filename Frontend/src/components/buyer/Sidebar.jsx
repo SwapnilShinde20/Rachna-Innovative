@@ -36,7 +36,7 @@ const RadioItem = ({ label, checked }) => (
 
 const Sidebar = () => {
   return (
-    <aside className="w-72 bg-white border-r border-gray-100 p-6 hidden md:block overflow-y-auto h-[calc(100vh-80px)]">
+    <aside className="w-72 bg-white border-r border-gray-100 p-6 hidden md:block ">
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-bold text-gray-900">Custom Filter</h2>
         <button className="text-blue-500 text-xs font-medium">Clear all</button>

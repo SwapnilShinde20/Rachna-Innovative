@@ -450,12 +450,16 @@ const LandingPage = () => {
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-8 md:grid-cols-4">
             <div>
-              <Link to="/" className="flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-                  <Building2 className="h-5 w-5 text-primary-foreground" />
+              <div className="flex items-center gap-2">
+                  <div className="bg-gray-900 text-white p-2 rounded-lg w-[40px] h-[40px] flex justify-center items-center">
+                    <House className="font-bold" size={20} />
+                  </div>
+                  <div className="font-bold text-lg leading-tight">
+                    Rachna
+                    <br />
+                    Innovative
+                  </div>
                 </div>
-                <span className="text-xl font-semibold text-foreground">EstateEase</span>
-              </Link>
               <p className="mt-4 text-sm text-muted-foreground">
                 Your trusted partner in finding the perfect property. Premium listings, verified agents.
               </p>

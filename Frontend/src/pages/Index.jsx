@@ -117,14 +117,17 @@ const Index = () => {
       {/* Mobile overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 z-30 bg-foreground/20 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-sm lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
 
+      {/* PASS THE PROPS HERE */}
       <SellerSidebar
         activeItem={activeItem}
         onItemClick={setActiveItem}
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
       />
 
       <main className="transition-all duration-300 lg:pl-64">
