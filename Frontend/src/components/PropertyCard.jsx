@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { 
   Star
 } from 'lucide-react';
@@ -6,8 +6,20 @@ import { Link } from 'react-router-dom';
 
 
 const PropertyCard = ({ property }) => {
+  const [isFav,setFav] = useState(false)
+   const formatPrice = (price) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
+  const toogleHeart = (e)=>{
+    e.preventDefault();
+    setFav(!isFav)
+  }
   return (
-    <Link className="group relative h-80 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300" to='/buy/1'>
+    <Link className="group relative h-80 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300" to={`/buy/${property.id}`}>
       {/* Background Image */}
       <img 
         src={property.image} 
@@ -29,13 +41,13 @@ const PropertyCard = ({ property }) => {
             <h3 className="text-sm font-bold text-gray-900">{property.title}</h3>
             <p className="text-[10px] text-gray-500">{property.location}</p>
           </div>
-          <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center cursor-pointer hover:bg-gray-100">
-             <div className="w-3 h-4 border border-gray-300 border-t-0 bg-gray-200"></div> {/* Simplified Bookmark Icon */}
-          </div>
+          <button onClick={(toogleHeart)} className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center cursor-pointer hover:bg-gray-100">
+             {isFav ? <i className="ri-heart-fill text-red-500"></i> : <i className="ri-heart-line text-red-500"></i>}
+          </button>
         </div>
         
-        <div className="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between">
-          <span className="font-bold text-gray-900">{property.price}</span>
+        <div className="mt-2 pt-2 border-t-2 border-neutral-gray-200 flex items-center justify-between">
+          <span className="font-bold text-gray-900">{formatPrice(property.price)}</span>
           <div className="flex items-center gap-1">
             <Star size={12} className="fill-orange-400 text-orange-400" />
             <span className="text-xs font-medium text-gray-600">{property.rating}/5</span>

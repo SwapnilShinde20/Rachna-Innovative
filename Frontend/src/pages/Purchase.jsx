@@ -16,15 +16,15 @@ import PropertyCard from '../components/PropertyCard';
 
 // --- Data Mock ---
 const properties = [
-  { id: 1, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '33 CR', rating: 4.8, image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=600' },
-  { id: 3, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '33 CR', rating: 4.8, image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=600' },
-  { id: 4, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '33 CR', rating: 4.8, image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600' },
-  { id: 5, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '33 CR', rating: 4.8, image: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&q=80&w=600' },
-  { id: 6, type: 'Villa', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '33 CR', rating: 4.8, image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&q=80&w=600' },
-  { id: 7, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '33 CR', rating: 4.8, image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=600' },
-  { id: 8, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '33 CR', rating: 4.8, image: 'https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?auto=format&fit=crop&q=80&w=600' },
-  { id: 9, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '33 CR', rating: 4.8, image: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&q=80&w=600' },
-  { id: 2, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '33 CR', rating: 4.8, image: 'https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?auto=format&fit=crop&q=80&w=600' },
+  { id: 1, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '33000', rating: 4.8, image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=600' },
+  { id: 3, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '333000', rating: 4.8, image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&q=80&w=600' },
+  { id: 4, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '43000', rating: 4.8, image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=600' },
+  { id: 5, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '36000', rating: 4.8, image: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&q=80&w=600' },
+  { id: 6, type: 'Villa', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '36000', rating: 4.8, image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&q=80&w=600' },
+  { id: 7, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '36000', rating: 4.8, image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=600' },
+  { id: 8, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '36000', rating: 4.8, image: 'https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?auto=format&fit=crop&q=80&w=600' },
+  { id: 9, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '36000', rating: 4.8, image: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&q=80&w=600' },
+  { id: 2, type: 'Home', title: 'Dream House Reality', location: 'Powai, Mumbai, India', price: '36000', rating: 4.8, image: 'https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?auto=format&fit=crop&q=80&w=600' },
   
 ];
 

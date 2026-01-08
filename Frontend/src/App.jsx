@@ -12,6 +12,7 @@ import Service from "./pages/buyer/Service";
 import Blog from "./pages/Blog";
 import BlogDetail from "./pages/BlogDetails";
 import HelpCenter from "./pages/HelpCenter";
+import Favorites from "./pages/buyer/Favorites";
 
 const queryClient = new QueryClient();
 const role = "buyer";
@@ -26,7 +27,7 @@ const App = () => (
           <Route path="/buy" element={<Purchase />} />
           <Route path="/buy/:id" element={<PropertyDetails />} />
           <Route path="/rent" element={<Purchase />} />
-          <Route path="/favorites" element={<Purchase />} />
+          <Route path="/favorites" element={<Favorites />} />
           <Route path="/help" element={<HelpCenter />} />
           <Route path="/services/:value" element={<Service/>} />
           <Route path="/blogs" element={<Blog />} />
