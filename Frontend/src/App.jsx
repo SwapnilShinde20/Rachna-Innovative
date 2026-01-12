@@ -6,12 +6,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Purchase from "./pages/Purchase";
-import PropertyDetails from "./pages/PropertyDetails";
+import Purchase from "./pages/buyer/Purchase.jsx";
+import PropertyDetails from "./pages/buyer/PropertyDetails";
 import Service from "./pages/buyer/Service";
-import Blog from "./pages/Blog";
-import BlogDetail from "./pages/BlogDetails";
-import HelpCenter from "./pages/HelpCenter";
+import Blog from "./pages/buyer/Blog";
+import BlogDetail from "./pages/buyer/BlogDetails";
+import HelpCenter from "./pages/buyer/HelpCenter";
 import Favorites from "./pages/buyer/Favorites";
 
 const queryClient = new QueryClient();

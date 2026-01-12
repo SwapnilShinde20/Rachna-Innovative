@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { MapPin, Home, Star } from 'lucide-react';
 
 // Importing your existing components
-import Navbar from '../components/buyer/Navbar';
-import PropertyCard from '../components/PropertyCard';
+import Navbar from '../../components/buyer/Navbar';
+import PropertyCard from '../../components/PropertyCard';
 // Sidebar is imported as requested, though visually this page uses a different right-column structure
-import Sidebar from '../components/buyer/Sidebar'; 
+import Sidebar from '../../components/buyer/Sidebar'; 
 
 const PropertyDetails = () => {
   const [activeTab, setActiveTab] = useState('Overview');

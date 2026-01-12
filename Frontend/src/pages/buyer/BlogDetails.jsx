@@ -16,7 +16,7 @@ import {
   User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Navbar from "../components/buyer/Navbar";
+import Navbar from "../../components/buyer/Navbar";
 
 // --- COLORS CONSTANTS ---
 const colors = {

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Building2, TrendingUp, ArrowRight, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import Navbar from "../components/buyer/Navbar";
+import Navbar from "../../components/buyer/Navbar";
 
 const featuredPost = {
   id: "1",

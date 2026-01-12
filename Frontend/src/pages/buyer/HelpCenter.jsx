@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import Navbar from "../components/buyer/Navbar";
+import Navbar from "../../components/buyer/Navbar";
 
 // Using your specific color palette
 const colors = {

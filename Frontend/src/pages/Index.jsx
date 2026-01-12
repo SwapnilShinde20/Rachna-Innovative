@@ -18,12 +18,12 @@ import { LeadsPanel } from "@/components/seller/LeadsPanel";
 import { AnalyticsPanel } from "@/components/seller/AnalyticsPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import MyListings from "./MyListings";
-import AddProperty from "./AddProperty";
-import LeadsPage from "./Leads";
-import AnalyticsPage from "./Analytics";
-import MessagesPage from "./Messages";
-import SettingsPage from "./Settings";
+import MyListings from "./Seller/MyListings";
+import AddProperty from "./Seller/AddProperty";
+import LeadsPage from "./Seller/Leads";
+import AnalyticsPage from "./Seller/Analytics";
+import MessagesPage from "./Seller/Messages";
+import SettingsPage from "./Seller/Settings";
 
 const properties = [
   {

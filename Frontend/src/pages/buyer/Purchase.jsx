@@ -10,9 +10,9 @@ import {
   Star,
   LayoutGrid
 } from 'lucide-react';
-import Navbar from '../components/buyer/Navbar';
-import Sidebar from '../components/buyer/Sidebar';
-import PropertyCard from '../components/PropertyCard';
+import Navbar from '../../components/buyer/Navbar';
+import Sidebar from '../../components/buyer/Sidebar';
+import PropertyCard from '../../components/PropertyCard';
 
 // --- Data Mock ---
 const properties = [
