@@ -12,7 +12,7 @@ const FilterHeader = ({ title }) => (
       <MapPin size={20} className="text-neutral-800" />
       <input placeholder={title} className="placeholder-neutral-400 text-sm outline-none bg-inherit w-full focus:text-neutral-500"/>
     </div>
-    <div className="bg-white rounded-full p-0.5 w-[25px] h-[25px] cursor-pointer shadow-sm border border-neutral-200 flex items-center justify-center w-5 h-5">
+    <div className="bg-white rounded-full p-0.5 w-[25px] h-[25px] cursor-pointer shadow-sm border border-neutral-200 flex items-center justify-center">
       <i className="ri-close-fill text-neutral-800 font-semibold"></i>
     </div>
   </div>
@@ -42,109 +42,133 @@ const RadioItem = ({ label, checked }) => (
   </div>
 );
 
-const Sidebar = () => {
+// Receive isOpen and onClose props
+const Sidebar = ({ isOpen, onClose }) => {
   return (
-    <aside className="w-72 font-inter bg-white border-r border-gray-100 p-4 hidden md:block font-sans">
-      {/* Main Header */}
-      <div className="flex items-center justify-between mb-6 px-1 pb-4 border-b-2 border-neutral-200 ">
-        <h2 className="text-sm font-semibold text-neutral-800">Custom Filter</h2>
-        <button className="text-brandBlue-500 text-sm font-regular hover:font-medium">
-          Clear all
-        </button>
-      </div>
+    <>
+      {/* 1. Mobile Overlay (Backdrop) */}
+      <div 
+        className={`fixed inset-0 bg-black/50 z-40 transition-opacity duration-300 lg:hidden
+          ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        onClick={onClose}
+      />
 
-      {/* Location Section */}
-      <div className="mb-6 pb-1 border-b-2 border-neutral-200">
-        <FilterHeader title="Location" />
-        <div className="px-1">
-          <CheckboxItem label="Mumbai, India" checked={true} />
-          <CheckboxItem label="Pune, India" checked={false} />
-        </div>
-      </div>
-
-      {/* Price Range Section */}
-      <div className="mb-6 pb-4 border-b-2 border-neutral-200">
-        <FilterHeader title="Price Range" />
-        <div className="px-1">
-          <RadioItem label="Under $1000" checked={false} />
-          <RadioItem label="$1000 - $15000" checked={false} />
-          <RadioItem label="More than $15000" checked={false} />
-          <RadioItem label="Custom" checked={true} />
+      {/* 2. Sidebar Container with Slide Animation */}
+      <aside 
+        className={`
+          font-inter bg-white border-r border-gray-100 p-4 
+          fixed top-0 bottom-0 left-0 z-50 w-72 overflow-y-auto shadow-2xl
+          transform transition-transform duration-300 ease-in-out
+          lg:relative lg:translate-x-0 lg:shadow-none lg:block lg:z-0 lg:h-auto
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+        `}
+      >
+        {/* Main Header */}
+        <div className="flex items-center justify-between mb-6 px-1 pb-4 border-b-2 border-neutral-200">
+          <h2 className="text-sm font-semibold text-neutral-800">Custom Filter</h2>
           
-          {/* Compact Slider */}
-          <div className="mt-12 mb-2 px-1">
-            <div className="relative h-5 bg-gray-100 rounded-full w-full">
-              {/* Active Bar */}
-              <div className="absolute left-[25%] right-[25%] h-full bg-brandBlue-500 rounded-full"></div>
-              
-              {/* Left Handle */}
-              <div className="absolute left-[25%] top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-[2.5px] border-brandBlue-500 rounded-full shadow cursor-pointer z-10 ">
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-gray-500 text-xs font-medium py-0.5 px-1.5 rounded-full border-2 border-neutral-200 shadow-sm whitespace-nowrap">
-                  $10k
-                </div>
-              </div>
+          <div className="flex items-center gap-3">
+             <button className="text-brandBlue-500 text-sm font-regular hover:font-medium">
+              Clear all
+            </button>
+            {/* Mobile Close Button */}
+            <button 
+              onClick={onClose} 
+              className="lg:hidden p-1 hover:bg-gray-100 rounded-full"
+            >
+              <X size={20} className="text-gray-500" />
+            </button>
+          </div>
+        </div>
 
-              {/* Right Handle */}
-              <div className="absolute right-[25%] top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-[2.5px] border-brandBlue-500 rounded-full shadow cursor-pointer z-10">
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-gray-500 text-xs font-medium py-0.5 px-1.5 rounded-full border-2 border-neutral-200 shadow-sm whitespace-nowrap">
-                  $50k
+        {/* Location Section */}
+        <div className="mb-6 pb-1 border-b-2 border-neutral-200">
+          <FilterHeader title="Location" />
+          <div className="px-1">
+            <CheckboxItem label="Mumbai, India" checked={true} />
+            <CheckboxItem label="Pune, India" checked={false} />
+          </div>
+        </div>
+
+        {/* Price Range Section */}
+        <div className="mb-6 pb-4 border-b-2 border-neutral-200">
+          <FilterHeader title="Price Range" />
+          <div className="px-1">
+            <RadioItem label="Under $1000" checked={false} />
+            <RadioItem label="$1000 - $15000" checked={false} />
+            <RadioItem label="More than $15000" checked={false} />
+            <RadioItem label="Custom" checked={true} />
+            
+            {/* Compact Slider */}
+            <div className="mt-12 mb-2 px-1">
+              <div className="relative h-5 bg-gray-100 rounded-full w-full">
+                <div className="absolute left-[25%] right-[25%] h-full bg-brandBlue-500 rounded-full"></div>
+                <div className="absolute left-[25%] top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-[2.5px] border-brandBlue-500 rounded-full shadow cursor-pointer z-10 ">
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-gray-500 text-xs font-medium py-0.5 px-1.5 rounded-full border-2 border-neutral-200 shadow-sm whitespace-nowrap">
+                    $10k
+                  </div>
+                </div>
+                <div className="absolute right-[25%] top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-[2.5px] border-brandBlue-500 rounded-full shadow cursor-pointer z-10">
+                  <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-gray-500 text-xs font-medium py-0.5 px-1.5 rounded-full border-2 border-neutral-200 shadow-sm whitespace-nowrap">
+                    $50k
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Land Area Section */}
-      <div className="mb-6 pb-4 border-b-2 border-neutral-200">
-        <FilterHeader title="Land Area" />
-        <div className="flex gap-6 px-1 my-5">
-           <div className="relative flex-1 ">
-             <input 
-               type="text" 
-               placeholder="Min" 
-               className="w-full  border border-neutral-200 rounded-md px-3 py-3 text-xs text-gray-600 placeholder-neutral-400 focus:outline-none " 
-             />
-             <span className="absolute right-2 top-3.5 text-[10px] text-neutral-400">sq ft</span>
-           </div>
-           <div className="relative flex-1">
-             <input 
-               type="text" 
-               placeholder="Max" 
-               className="w-full text-sm border border-neutral-200 rounded-md px-3 py-3 text-xs text-gray-600 placeholder-neutral-400 focus:outline-none " 
-             />
-             <span className="absolute right-2 top-3.5 text-[10px] text-neutral-400">sq ft</span>
-           </div>
+        {/* Land Area Section */}
+        <div className="mb-6 pb-4 border-b-2 border-neutral-200">
+          <FilterHeader title="Land Area" />
+          <div className="flex gap-6 px-1 my-5">
+             <div className="relative flex-1 ">
+               <input 
+                 type="text" 
+                 placeholder="Min" 
+                 className="w-full  border border-neutral-200 rounded-md px-3 py-3 text-xs text-gray-600 placeholder-neutral-400 focus:outline-none " 
+               />
+               <span className="absolute right-2 top-3.5 text-[10px] text-neutral-400">sq ft</span>
+             </div>
+             <div className="relative flex-1">
+               <input 
+                 type="text" 
+                 placeholder="Max" 
+                 className="w-full text-sm border border-neutral-200 rounded-md px-3 py-3 text-xs text-gray-600 placeholder-neutral-400 focus:outline-none " 
+               />
+               <span className="absolute right-2 top-3.5 text-[10px] text-neutral-400">sq ft</span>
+             </div>
+          </div>
         </div>
-      </div>
 
-      {/* Type Of Place Section */}
-      <div className="mb-6  pb-2 border-b-2 border-neutral-200">
-        <FilterHeader title="Type Of Place" />
-        <div className="px-1">
-          <CheckboxItem label="Single Family House" checked={true} />
-          <CheckboxItem label="Condo/Townhouse" checked={false} />
-          <CheckboxItem label="Apartment" checked={true} />
-          <CheckboxItem label="Bungalow" checked={false} />
+        {/* Type Of Place Section */}
+        <div className="mb-6  pb-2 border-b-2 border-neutral-200">
+          <FilterHeader title="Type Of Place" />
+          <div className="px-1">
+            <CheckboxItem label="Single Family House" checked={true} />
+            <CheckboxItem label="Condo/Townhouse" checked={false} />
+            <CheckboxItem label="Apartment" checked={true} />
+            <CheckboxItem label="Bungalow" checked={false} />
+          </div>
         </div>
-      </div>
 
-      {/* Amenities Section */}
-      <div className="mb-6 pb-8 border-b-2 border-neutral-200">
-        <FilterHeader title="Amenities" />
-        <div className="flex flex-wrap gap-2 px-1">
-            <button className="bg-brandBlue-500 text-white text-sm px-4 py-1.5 rounded-[6px]  ">
-              Garden
-            </button>
-            <button className="bg-white text-neutral-500 text-sm px-4 py-1.5 rounded-[6px] border border-neutral-200">
-              Gym
-            </button>
-            <button className="bg-white text-neutral-500 text-sm px-4 py-1.5 rounded-[6px] border border-neutral-200 ">
-              Garage
-            </button>
+        {/* Amenities Section */}
+        <div className="mb-6 pb-8 border-b-2 border-neutral-200">
+          <FilterHeader title="Amenities" />
+          <div className="flex flex-wrap gap-2 px-1">
+             <button className="bg-brandBlue-500 text-white text-sm px-4 py-1.5 rounded-[6px]  ">
+               Garden
+             </button>
+             <button className="bg-white text-neutral-500 text-sm px-4 py-1.5 rounded-[6px] border border-neutral-200">
+               Gym
+             </button>
+             <button className="bg-white text-neutral-500 text-sm px-4 py-1.5 rounded-[6px] border border-neutral-200 ">
+               Garage
+             </button>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 };
 
