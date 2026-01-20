@@ -172,8 +172,11 @@ const LandingPage = () => {
             <Button variant="ghost" size="sm" asChild>
               <Link to="/buy">Buyer</Link>
             </Button>
-            <Button size="sm" asChild>
+            <Button variant="ghost" size="sm" asChild>
               <Link to="/dashboard">Seller</Link>
+            </Button>
+            <Button size="sm" asChild>
+              <Link to="/admin/login">Admin</Link>
             </Button>
           </div>
         </div>

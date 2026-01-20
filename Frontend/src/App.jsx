@@ -13,9 +13,31 @@ import Blog from "./pages/buyer/Blog";
 import BlogDetail from "./pages/buyer/BlogDetails";
 import HelpCenter from "./pages/buyer/HelpCenter";
 import Favorites from "./pages/buyer/Favorites";
+import LoginPage from "./pages/admin/Login/LoginPage.jsx";
+import { ProtectedRoute } from "./components/admin/auth/ProtectedRoute.jsx";
+import { DashboardLayout } from "./components/admin/dashboard/DashboardLayout";
+
+
+import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
+import SellersPage from "./pages/admin/SellersPage";
+import UsersPage from "./pages/admin/UsersPage";
+import TransactionsPage from "./pages/admin/TransactionsPage";
+import ReviewsPage from "./pages/admin/ReviewsPage";
+import VideoCallsPage from "./pages/admin/VideoCallsPage";
+import MeetingsPage from "./pages/admin/MeetingsPage";
+import AnalyticsPage from "./pages/admin/AnalyticsPage";
+import CMSPagesPage from "./pages/admin/CMSPagesPage";
+import BlogPage from "./pages/admin/BlogPage";
+import NotificationsPage from "./pages/admin/NotificationsPage";
+import SettingsPage from "./pages/admin/SettingsPage";
+import PageEditorPage from "./pages/admin/cms/PageEditorPage";
+import BlogEditorPage from "./pages/admin/cms/BlogEditorPage";
+import CategoriesPage from "./pages/admin/cms/CategoriesPage";
+import TagsPage from "./pages/admin/cms/TagsPage";
+import MediaPage from "./pages/admin/cms/MediaPage";
+import SEOSettingsPage from "./pages/admin/cms/SEOSettingsPage.jsx";
 
 const queryClient = new QueryClient();
-const role = "buyer";
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -23,6 +45,47 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+
+
+            <Route path="/admin/login" element={<LoginPage />} />
+            {/* Admin Routes */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={["admin"]}>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+
+              <Route index element={<AdminDashboard />} />
+              <Route path="sellers" element={<SellersPage />} />
+              <Route path="sellers/:status" element={<SellersPage />} />
+              <Route path="users" element={<UsersPage />} />
+              <Route path="transactions" element={<TransactionsPage />} />
+              <Route path="reviews" element={<ReviewsPage />} />
+              <Route path="video-calls" element={<VideoCallsPage />} />
+              <Route path="meetings" element={<MeetingsPage />} />
+              <Route path="analytics" element={<AnalyticsPage />} />
+
+              {/* CMS */}
+              <Route path="cms/pages" element={<CMSPagesPage />} />
+              <Route path="cms/pages/new" element={<PageEditorPage />} />
+              <Route path="cms/pages/:id" element={<PageEditorPage />} />
+
+              <Route path="cms/blogs" element={<BlogPage />} />
+              <Route path="cms/blogs/new" element={<BlogEditorPage />} />
+              <Route path="cms/blogs/:id" element={<BlogEditorPage />} />
+
+              <Route path="cms/blog-categories" element={<CategoriesPage />} />
+              <Route path="cms/blog-tags" element={<TagsPage />} />
+              <Route path="cms/media" element={<MediaPage />} />
+              <Route path="cms/seo" element={<SEOSettingsPage />} />
+
+              <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
+
           <Route path="/" element={<LandingPage />} />
           <Route path="/buy" element={<Purchase />} />
           <Route path="/buy/:id" element={<PropertyDetails />} />
