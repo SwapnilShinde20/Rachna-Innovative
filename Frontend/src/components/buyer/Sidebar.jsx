@@ -322,10 +322,12 @@ const Sidebar = ({ isOpen, onClose }) => {
         <div className="mb-6  pb-2 border-b-2 border-neutral-200">
           <FilterHeader title="Type Of Place" />
           <div className="px-1">
-            <CheckboxItem label="Single Family House" checked={true} />
-            <CheckboxItem label="Condo/Townhouse" checked={false} />
+            <CheckboxItem label="Bungalow" checked={true} />
+            <CheckboxItem label="Resorts/Hotels" checked={false} />
             <CheckboxItem label="Apartment" checked={true} />
-            <CheckboxItem label="Bungalow" checked={false} />
+            <CheckboxItem label="Agricultural Land" checked={false} />
+            <CheckboxItem label="Manufacturing Industry" checked={false} />
+            <CheckboxItem label="Land for Industry" checked={false} />
           </div>
         </div>
 
