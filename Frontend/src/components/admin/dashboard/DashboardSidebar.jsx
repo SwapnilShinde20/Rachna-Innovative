@@ -30,7 +30,14 @@ const adminNavItems = [
   { label: "Users", icon: Users, href: "/admin/users" },
   { label: "Transactions", icon: DollarSign, href: "/admin/transactions" },
   { label: "Reviews", icon: Star, href: "/admin/reviews" },
-  { label: "Video Calls", icon: Video, href: "/admin/video-calls" },
+  {
+    label: "Video Calls",
+    icon: Video,
+    children: [
+      { label: "All Video Calls", href: "/admin/video-calls" },
+      { label: "Completed Calls", href: "/admin/videocalls/completed" },
+    ],
+  },
   { label: "Meetings", icon: Calendar, href: "/admin/meetings" },
   { label: "Analytics", icon: BarChart3, href: "/admin/analytics" },
   {

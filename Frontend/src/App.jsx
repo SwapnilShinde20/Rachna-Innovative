@@ -38,6 +38,8 @@ import MediaPage from "./pages/admin/cms/MediaPage";
 import SEOSettingsPage from "./pages/admin/cms/SEOSettingsPage.jsx";
 import LegalSupportPage from "./pages/buyer/LegalServices.jsx";
 import SecurityPrivacyPage from "./pages/buyer/SecurityPrivacy.jsx";
+import CompletedCalls from "./pages/admin/CompletedCalls.jsx";
+import CallDetails from "./pages/admin/CallDetail.jsx";
 
 const queryClient = new QueryClient();
 const App = () => (
@@ -67,6 +69,8 @@ const App = () => (
               <Route path="transactions" element={<TransactionsPage />} />
               <Route path="reviews" element={<ReviewsPage />} />
               <Route path="video-calls" element={<VideoCallsPage />} />
+              <Route path="videocalls/completed" element={<CompletedCalls />} />
+              <Route path="video-calls/completed/:id" element={<CallDetails />} />
               <Route path="meetings" element={<MeetingsPage />} />
               <Route path="analytics" element={<AnalyticsPage />} />
 
