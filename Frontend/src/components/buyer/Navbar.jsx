@@ -16,7 +16,7 @@ const navItems = [
   { name: "Rent", link: "/rent" },
   { name: "Favorites", link: "/favorites" },
   { name: "Help", link: "/help" },
-  { name: "Services", link: "/services", hasDropdown: true },
+  { name: "Services", link: "/services"},
   { name: "Blog", link: "/blogs" },
 ];
 
@@ -45,57 +45,7 @@ const Navbar = () => {
         {/* Center Nav (Desktop) - Kept hidden md:flex */}
         <div className="hidden md:flex bg-neutral-50 rounded-full p-1 gap-1 border border-neutral-200">
           {navItems.map((item) => {
-            if (item.hasDropdown) {
-              return (
-                <div
-                  key={item.name}
-                  className="relative"
-                  onMouseEnter={() => setIsServicesOpen(true)}
-                  onMouseLeave={() => setIsServicesOpen(false)}
-                >
-                  <NavLink
-                    to={item.link}
-                    className={({ isActive }) =>
-                      isActive
-                        ? "px-5 py-2 rounded-full bg-white border border-neutral-200 shadow-sm text-brandBlue-600 font-medium text-sm flex items-center gap-1"
-                        : "px-5 py-2 rounded-full text-neutral-500 hover:text-neutral-900 font-medium text-sm flex items-center gap-1"
-                    }
-                  >
-                    {item.name}
-                    <ChevronDown
-                      size={14}
-                      className={`transition-transform duration-200 ${
-                        isServicesOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </NavLink>
-
-                  {/* Desktop Dropdown Menu */}
-                  {isServicesOpen && (
-                    <div
-                      className="absolute top-[80%] left-0 w-48 pt-4 z-50"
-                      onMouseEnter={() => setIsServicesOpen(true)}
-                      onMouseLeave={() => setIsServicesOpen(false)}
-                    >
-                      <div className="bg-white border border-neutral-100 rounded-xl shadow-lg overflow-hidden p-1">
-                        <Link
-                          to="/services/legal"
-                          className="block px-4 py-2 text-sm text-neutral-500 hover:bg-neutral-50 hover:text-brandBlue-500 rounded-lg transition-colors"
-                        >
-                          Legal Support
-                        </Link>
-                        <Link
-                          to="/services/security"
-                          className="block px-4 py-2 text-sm text-neutral-500 hover:bg-neutral-50 hover:text-brandBlue-500 rounded-lg transition-colors"
-                        >
-                          Security & Privacy
-                        </Link>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            }
+           
 
             return (
               <NavLink
@@ -174,43 +124,7 @@ const Navbar = () => {
 
           <div className="flex flex-col gap-2">
             {navItems.map((item) => {
-              if (item.hasDropdown) {
-                return (
-                  <div key={item.name} className="flex flex-col">
-                    <button
-                      onClick={() => setIsMobileServicesOpen(!isMobileServicesOpen)}
-                      className="px-4 py-3 rounded-xl text-gray-700 hover:bg-[#F6F8FA] font-medium text-sm flex justify-between items-center"
-                    >
-                      <span className="flex items-center gap-2">{item.name}</span>
-                      <ChevronDown
-                        size={16}
-                        className={`transition-transform duration-200 ${
-                          isMobileServicesOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-                    {/* Mobile Submenu */}
-                    {isMobileServicesOpen && (
-                      <div className="pl-6 flex flex-col gap-1 mt-1 bg-gray-50 rounded-lg py-2">
-                         <Link
-                          to="/services/legal"
-                          className="px-4 py-2 text-sm text-neutral-500 hover:text-brandBlue-500"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          Legal Support
-                        </Link>
-                        <Link
-                          to="/services/security"
-                          className="px-4 py-2 text-sm text-neutral-500 hover:text-brandBlue-500"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          Security & Privacy
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-                );
-              }
+           
               return (
                 <NavLink
                   key={item.name}

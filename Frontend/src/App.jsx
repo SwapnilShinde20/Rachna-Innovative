@@ -36,6 +36,8 @@ import CategoriesPage from "./pages/admin/cms/CategoriesPage";
 import TagsPage from "./pages/admin/cms/TagsPage";
 import MediaPage from "./pages/admin/cms/MediaPage";
 import SEOSettingsPage from "./pages/admin/cms/SEOSettingsPage.jsx";
+import LegalSupportPage from "./pages/buyer/LegalServices.jsx";
+import SecurityPrivacyPage from "./pages/buyer/SecurityPrivacy.jsx";
 
 const queryClient = new QueryClient();
 const App = () => (
@@ -92,7 +94,9 @@ const App = () => (
           <Route path="/rent" element={<Purchase />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/help" element={<HelpCenter />} />
-          <Route path="/services/:value" element={<Service/>} />
+          <Route path="/services" element={<Service/>} />
+          <Route path="/service/legal-support" element={<LegalSupportPage/>} />
+          <Route path="/service/security-privacy" element={<SecurityPrivacyPage/>} />
           <Route path="/blogs" element={<Blog />} />
           <Route path="/blog/:id" element={<BlogDetail />} />
           <Route path="/dashboard" element={< Index/> } />
