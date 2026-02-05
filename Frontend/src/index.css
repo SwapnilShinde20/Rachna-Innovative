@@ -64,6 +64,28 @@
     --sidebar-accent-foreground: 217 91% 45%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217 91% 60%;
+
+      /* Status colors */
+    --status-pending: 45 93% 47%;
+    --status-scheduled: 217 91% 60%;
+    --status-completed: 142 76% 36%;
+    --status-cancelled: 0 84% 60%;
+    --status-in-discussion: 262 83% 58%;
+    --status-negotiation: 25 95% 53%;
+    --status-deal-closed: 142 76% 36%;
+    --status-deal-dropped: 0 84% 60%;
+
+    /* Timeline colors */
+    --timeline-line: 214 32% 85%;
+    --timeline-dot: 217 91% 60%;
+    --timeline-site-visit: 142 76% 36%;
+    --timeline-phone-call: 217 91% 60%;
+    --timeline-negotiation: 25 95% 53%;
+    --timeline-document: 262 83% 58%;
+    --timeline-price: 45 93% 47%;
+    --timeline-deal: 142 76% 36%;
+    --timeline-followup: 340 82% 52%;
+    --timeline-other: 215 16% 47%;
   }
 
   .dark {
@@ -109,6 +131,26 @@
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 217 33% 17%;
     --sidebar-ring: 217 91% 60%;
+
+     --status-pending: 45 93% 47%;
+    --status-scheduled: 217 91% 60%;
+    --status-completed: 142 76% 36%;
+    --status-cancelled: 0 84% 60%;
+    --status-in-discussion: 262 83% 58%;
+    --status-negotiation: 25 95% 53%;
+    --status-deal-closed: 142 76% 36%;
+    --status-deal-dropped: 0 84% 60%;
+
+    --timeline-line: 217 33% 25%;
+    --timeline-dot: 217 91% 60%;
+    --timeline-site-visit: 142 76% 36%;
+    --timeline-phone-call: 217 91% 60%;
+    --timeline-negotiation: 25 95% 53%;
+    --timeline-document: 262 83% 58%;
+    --timeline-price: 45 93% 47%;
+    --timeline-deal: 142 76% 36%;
+    --timeline-followup: 340 82% 52%;
+    --timeline-other: 215 20% 65%;
   }
 }
 

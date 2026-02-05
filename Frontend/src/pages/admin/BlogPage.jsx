@@ -141,8 +141,9 @@ export default function BlogPage() {
   const draftPosts = mockBlogPosts.filter((p) => p.status === 'draft');
 
   return (
-    <div className="space-y-6">
+   <div>
       <DashboardHeader title="Blog CMS" subtitle="Create and manage blog content" />
+     <div className="p-6 space-y-6">
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -498,5 +499,6 @@ export default function BlogPage() {
         </DialogContent>
       </Dialog>
     </div>
+   </div>
   );
 }

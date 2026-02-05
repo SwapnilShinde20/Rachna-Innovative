@@ -84,8 +84,9 @@ export default function ReviewsPage() {
   };
 
   return (
+      <div>
+        <DashboardHeader title="Reviews & Ratings" subtitle="Moderate and manage user reviews" />
     <div className="p-6 space-y-6">
-      <DashboardHeader title="Reviews & Ratings" subtitle="Moderate and manage user reviews" />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -359,5 +360,6 @@ export default function ReviewsPage() {
         </DialogContent>
       </Dialog>
     </div>
+      </div>
   );
 }

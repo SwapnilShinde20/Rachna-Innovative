@@ -112,11 +112,12 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+   <div>
       <DashboardHeader
         title="Users Management"
         subtitle="Manage all buyers and sellers"
       />
+     <div className="p-6 space-y-6">
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -319,5 +320,6 @@ export default function UsersPage() {
         </DialogContent>
       </Dialog>
     </div>
+   </div>
   );
 }

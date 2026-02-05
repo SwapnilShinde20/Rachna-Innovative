@@ -96,13 +96,15 @@ export default function TagsPage() {
   );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <DashboardHeader
+    <div>
+      <DashboardHeader
           title="Blog Tags"
           subtitle="Manage blog post tags"
         />
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        
         <Button onClick={handleAdd}>
           <Plus className="h-4 w-4 mr-2" />
           Add Tag
@@ -219,6 +221,7 @@ export default function TagsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
     </div>
   );
 }

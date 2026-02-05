@@ -156,13 +156,15 @@ export default function MediaPage() {
   const totalSize = media.reduce((acc, item) => acc + parseFloat(item.size), 0);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <DashboardHeader
+    <div>
+      <DashboardHeader
           title="Media Library"
           subtitle="Manage uploaded files and images"
         />
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        
         <Button>
           <Upload className="h-4 w-4 mr-2" />
           Upload Files
@@ -293,6 +295,7 @@ export default function MediaPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
     </div>
   );
 }

@@ -102,11 +102,12 @@ export default function MeetingsPage() {
   /* -------------------- RENDER -------------------- */
 
   return (
-    <div className="space-y-6">
+  <div>
       <DashboardHeader
         title="Meetings"
         subtitle="Manage and schedule buyer-seller meetings"
       />
+      <div className="p-6 space-y-6">
 
       {/* -------------------- STATS -------------------- */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -443,5 +444,6 @@ export default function MeetingsPage() {
         </DialogContent>
       </Dialog>
     </div>
+  </div>
   );
 }

@@ -76,8 +76,10 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <DashboardHeader title="Settings" subtitle="Manage your account and system preferences" />
+      <div>
+        <DashboardHeader title="Settings" subtitle="Manage your account and system preferences" />
+
+    <div className="p-6 space-y-6">
 
       <Tabs defaultValue="profile">
         <TabsList>
@@ -305,5 +307,6 @@ export default function SettingsPage() {
         </TabsContent>
       </Tabs>
     </div>
+      </div>
   );
 }

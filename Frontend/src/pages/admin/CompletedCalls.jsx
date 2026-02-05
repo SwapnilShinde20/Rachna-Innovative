@@ -30,6 +30,7 @@ import {
 
 import DealStatusBadge from "@/components/admin//video-calls/DealStatusBadge";
 import { mockVideoCalls } from "@/data/mock-video-calls";
+import { DashboardHeader } from "../../components/admin/dashboard/DashboardHeader";
 
 /**
  * Same labels as in types/video-calls
@@ -74,17 +75,11 @@ export default function CompletedCalls() {
   };
 
   return (
-    <>
-      <div className="space-y-6">
+    <div>
+            <DashboardHeader title="Completed Video Calls" subtitle="Manage post-call activities and track deal progress" />
+      <div className="p-6 space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-2xl font-semibold text-foreground">
-            Completed Video Calls
-          </h1>
-          <p className="text-muted-foreground">
-            Manage post-call activities and track deal progress
-          </p>
-        </div>
+        
 
         {/* Stats */}
         <div className="grid gap-4 md:grid-cols-4">
@@ -294,6 +289,6 @@ export default function CompletedCalls() {
           </CardContent>
         </Card>
       </div>
-    </>
+    </div>
   );
 }

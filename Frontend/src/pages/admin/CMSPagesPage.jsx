@@ -113,11 +113,12 @@ export default function CMSPagesPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div>
       <DashboardHeader
         title="CMS Pages"
         subtitle="Manage website sections and static pages"
       />
+      <div className="p-6 space-y-6">
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -305,6 +306,7 @@ export default function CMSPagesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
     </div>
   );
 }

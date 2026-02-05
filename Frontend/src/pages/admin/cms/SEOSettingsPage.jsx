@@ -59,12 +59,14 @@ export default function SEOSettingsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <DashboardHeader
+     <div>
+      <DashboardHeader
           title="SEO Settings"
           subtitle="Configure global SEO and meta settings"
         />
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
+       
         <Button onClick={handleSave} disabled={isSaving}>
           <Save className="h-4 w-4 mr-2" />
           {isSaving ? 'Saving...' : 'Save Changes'}
@@ -325,5 +327,6 @@ export default function SEOSettingsPage() {
         </div>
       </div>
     </div>
+     </div>
   );
 }

@@ -137,11 +137,12 @@ export default function SellersPage() {
   const steps = ["business_info", "documents", "contact_verification"];
 
   return (
-    <div className="space-y-6">
+    <div>
       <DashboardHeader
         title={getPageTitle()}
         subtitle="Manage seller registrations and verifications"
       />
+      <div className="p-6 space-y-6">
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -255,6 +256,7 @@ export default function SellersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
     </div>
   );
 }

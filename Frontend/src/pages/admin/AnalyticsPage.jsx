@@ -80,11 +80,12 @@ export default function AnalyticsPage() {
   const [sellerFilter, setSellerFilter] = useState('all');
 
   return (
-    <div className="space-y-6">
+   <div>
       <DashboardHeader
         title="Analytics"
         subtitle="Platform performance and insights"
       />
+     <div className="p-6 space-y-6">
 
       {/* Filters */}
       <div className="flex items-center gap-4">
@@ -291,5 +292,6 @@ export default function AnalyticsPage() {
         </CardContent>
       </Card>
     </div>
+   </div>
   );
 }

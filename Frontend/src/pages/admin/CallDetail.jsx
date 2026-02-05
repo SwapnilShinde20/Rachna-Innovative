@@ -48,6 +48,7 @@ import {
 } from "@/data/mock-video-calls";
 
 import { toast } from "sonner";
+import { DashboardHeader } from "../../components/admin/dashboard/DashboardHeader";
 
 /**
  * Same labels as in types/video-calls
@@ -148,6 +149,9 @@ export default function CallDetail() {
   return (
     <>
       <div className="space-y-6">
+      <DashboardHeader title={call.meetingTitle} subtitle={`Video call completed on ${" "}
+                ${format(new Date(call.callDate), "MMMM dd, yyyy")}`} />
+        
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
@@ -156,15 +160,7 @@ export default function CallDetail() {
                 <ArrowLeft className="h-4 w-4" />
               </Link>
             </Button>
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground">
-                {call.meetingTitle}
-              </h1>
-              <p className="text-muted-foreground">
-                Video call completed on{" "}
-                {format(new Date(call.callDate), "MMMM dd, yyyy")}
-              </p>
-            </div>
+            
           </div>
 
           <Button

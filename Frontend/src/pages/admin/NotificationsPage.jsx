@@ -66,11 +66,13 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <DashboardHeader
+   <div>
+     <DashboardHeader
         title="Notifications"
         subtitle="System alerts and updates"
       />
+    <div className="p-6 space-y-6">
+      
 
       {/* ---------------- STATS ---------------- */}
 
@@ -238,5 +240,6 @@ export default function NotificationsPage() {
         </CardContent>
       </Card>
     </div>
+   </div>
   );
 }

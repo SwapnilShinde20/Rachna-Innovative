@@ -108,8 +108,9 @@ export default function VideoCallsPage() {
     : 0;
 
   return (
-    <div className="space-y-6">
+    <div>
       <DashboardHeader title="Video Calls" subtitle="Manage video call requests and mediation" />
+      <div className="p-6 space-y-6">
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -403,6 +404,7 @@ export default function VideoCallsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
     </div>
   );
 }

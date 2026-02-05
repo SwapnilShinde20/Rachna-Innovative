@@ -79,16 +79,18 @@ export default function PageEditorPage() {
   };
 
   return (
-    <div className="space-y-6">
+   <div>
+     <DashboardHeader
+            title={isNew ? 'Create New Page' : 'Edit Page'}
+            subtitle="Manage page content and SEO settings"
+          />
+    <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate('/admin/cms/pages')}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <DashboardHeader
-            title={isNew ? 'Create New Page' : 'Edit Page'}
-            subtitle="Manage page content and SEO settings"
-          />
+          
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={() => handleSave(false)}>
@@ -254,5 +256,6 @@ export default function PageEditorPage() {
         </div>
       </div>
     </div>
+   </div>
   );
 }

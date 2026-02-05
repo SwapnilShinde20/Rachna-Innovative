@@ -132,12 +132,14 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <DashboardHeader
+     <div>
+      <DashboardHeader
           title="Blog Categories"
           subtitle="Manage blog post categories"
         />
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
+       
         <Button onClick={handleAdd}>
           <Plus className="h-4 w-4 mr-2" />
           Add Category
@@ -263,5 +265,6 @@ export default function CategoriesPage() {
         </DialogContent>
       </Dialog>
     </div>
+     </div>
   );
 }

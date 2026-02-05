@@ -95,16 +95,19 @@ export default function BlogEditorPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/admin/cms/blogs')}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <DashboardHeader
+     <div>
+      <DashboardHeader
             title={isNew ? 'Create New Post' : 'Edit Post'}
             subtitle="Write and manage blog content"
           />
+    <div className="p-6 space-y-6">
+       
+      <div className="flex items-center justify-between">
+        <div className="flex items-center w-full">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/admin/cms/blogs')}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={() => handleSave(false)}>
@@ -302,5 +305,6 @@ export default function BlogEditorPage() {
         </div>
       </div>
     </div>
+     </div>
   );
 }
