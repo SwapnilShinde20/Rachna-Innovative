@@ -273,7 +273,7 @@ export default function CompletedCalls() {
                             size="sm"
                           >
                             <Link
-                              to={`/admin/video-calls/completed/${call.id}`}
+                              to={`/admin/videocalls/completed/${call.id}`}
                             >
                               <Eye className="mr-2 h-4 w-4" />
                               View Timeline

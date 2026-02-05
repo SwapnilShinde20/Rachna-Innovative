@@ -42,10 +42,7 @@ import DealStatusBadge from "@/components/admin//video-calls/DealStatusBadge";
 import TimelineItem from "@/components/admin//video-calls/TimelineItem";
 import TimelineEntryForm from "@/components/admin//video-calls/TimelineEntryForm";
 
-import {
-  mockVideoCalls,
-  mockTimelineEntries,
-} from "@/data/mock-video-calls";
+import { mockVideoCalls, mockTimelineEntries } from "@/data/mock-video-calls";
 
 import { toast } from "sonner";
 import { DashboardHeader } from "../../components/admin/dashboard/DashboardHeader";
@@ -67,7 +64,7 @@ export default function CallDetail() {
   const call = mockVideoCalls.find((c) => c.id === id);
 
   const [entries, setEntries] = useState(
-    mockTimelineEntries.filter((e) => e.videoCallId === id)
+    mockTimelineEntries.filter((e) => e.videoCallId === id),
   );
   const [dealStatus, setDealStatus] = useState(call?.dealStatus || "open");
   const [formOpen, setFormOpen] = useState(false);
@@ -76,9 +73,7 @@ export default function CallDetail() {
 
   const sortedEntries = useMemo(() => {
     return [...entries].sort(
-      (a, b) =>
-        new Date(a.dateTime).getTime() -
-        new Date(b.dateTime).getTime()
+      (a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime(),
     );
   }, [entries]);
 
@@ -107,8 +102,8 @@ export default function CallDetail() {
         entries.map((e) =>
           e.id === editingEntry.id
             ? { ...e, ...data, updatedAt: new Date().toISOString() }
-            : e
-        )
+            : e,
+        ),
       );
       toast.success("Timeline entry updated");
     } else {
@@ -141,17 +136,17 @@ export default function CallDetail() {
 
   const handleStatusChange = (status) => {
     setDealStatus(status);
-    toast.success(
-      `Deal status updated to ${DEAL_STATUS_LABELS[status]}`
-    );
+    toast.success(`Deal status updated to ${DEAL_STATUS_LABELS[status]}`);
   };
 
   return (
-    <>
-      <div className="space-y-6">
-      <DashboardHeader title={call.meetingTitle} subtitle={`Video call completed on ${" "}
-                ${format(new Date(call.callDate), "MMMM dd, yyyy")}`} />
-        
+    <div>
+      <DashboardHeader
+        title={call.meetingTitle}
+        subtitle={`Video call completed on ${" "}
+                ${format(new Date(call.callDate), "MMMM dd, yyyy")}`}
+      />
+      <div className="p-6 space-y-6">
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-4">
@@ -160,7 +155,6 @@ export default function CallDetail() {
                 <ArrowLeft className="h-4 w-4" />
               </Link>
             </Button>
-            
           </div>
 
           <Button
@@ -191,17 +185,12 @@ export default function CallDetail() {
                     <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
                       <Clock className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    <h3 className="font-medium">
-                      No activity logged yet
-                    </h3>
+                    <h3 className="font-medium">No activity logged yet</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Start tracking post-call activities by adding
-                      your first update.
+                      Start tracking post-call activities by adding your first
+                      update.
                     </p>
-                    <Button
-                      className="mt-4"
-                      onClick={() => setFormOpen(true)}
-                    >
+                    <Button className="mt-4" onClick={() => setFormOpen(true)}>
                       <Plus className="mr-2 h-4 w-4" />
                       Add First Update
                     </Button>
@@ -212,9 +201,7 @@ export default function CallDetail() {
                       <TimelineItem
                         key={entry.id}
                         entry={entry}
-                        isLast={
-                          index === sortedEntries.length - 1
-                        }
+                        isLast={index === sortedEntries.length - 1}
                         onEdit={handleEdit}
                         onDelete={(id) => setDeleteId(id)}
                       />
@@ -230,20 +217,13 @@ export default function CallDetail() {
             {/* Deal Status */}
             <Card>
               <CardHeader className="pb-4">
-                <CardTitle className="text-base">
-                  Deal Status
-                </CardTitle>
+                <CardTitle className="text-base">Deal Status</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <DealStatusBadge
-                  status={dealStatus}
-                  className="text-sm"
-                />
+                <DealStatusBadge status={dealStatus} className="text-sm" />
                 <Select
                   value={dealStatus}
-                  onValueChange={(v) =>
-                    handleStatusChange(v)
-                  }
+                  onValueChange={(v) => handleStatusChange(v)}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -254,7 +234,7 @@ export default function CallDetail() {
                         <SelectItem key={value} value={value}>
                           {label}
                         </SelectItem>
-                      )
+                      ),
                     )}
                   </SelectContent>
                 </Select>
@@ -264,9 +244,7 @@ export default function CallDetail() {
             {/* Call Summary */}
             <Card>
               <CardHeader className="pb-4">
-                <CardTitle className="text-base">
-                  Call Summary
-                </CardTitle>
+                <CardTitle className="text-base">Call Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-start gap-3">
@@ -274,12 +252,8 @@ export default function CallDetail() {
                     <User className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">
-                      Buyer
-                    </p>
-                    <p className="font-medium">
-                      {call.buyerName}
-                    </p>
+                    <p className="text-xs text-muted-foreground">Buyer</p>
+                    <p className="font-medium">{call.buyerName}</p>
                     <p className="text-xs text-muted-foreground">
                       {call.buyerEmail}
                     </p>
@@ -291,12 +265,8 @@ export default function CallDetail() {
                     <Building2 className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">
-                      Seller
-                    </p>
-                    <p className="font-medium">
-                      {call.sellerName}
-                    </p>
+                    <p className="text-xs text-muted-foreground">Seller</p>
+                    <p className="font-medium">{call.sellerName}</p>
                     <p className="text-xs text-muted-foreground">
                       {call.sellerCompany}
                     </p>
@@ -308,9 +278,7 @@ export default function CallDetail() {
                     <Home className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-xs text-muted-foreground">
-                      Property
-                    </p>
+                    <p className="text-xs text-muted-foreground">Property</p>
                     <p className="font-mono text-sm font-medium">
                       {call.propertyReference}
                     </p>
@@ -325,13 +293,11 @@ export default function CallDetail() {
                     <p className="text-xs text-muted-foreground">
                       Call Details
                     </p>
-                    <p className="font-medium">
-                      {call.duration} min
-                    </p>
+                    <p className="font-medium">{call.duration} min</p>
                     <p className="text-xs text-muted-foreground">
                       {format(
                         new Date(call.callDate),
-                        "MMM dd, yyyy 'at' h:mm a"
+                        "MMM dd, yyyy 'at' h:mm a",
                       )}
                     </p>
                   </div>
@@ -354,24 +320,17 @@ export default function CallDetail() {
       />
 
       {/* Delete Confirmation */}
-      <AlertDialog
-        open={!!deleteId}
-        onOpenChange={() => setDeleteId(null)}
-      >
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              Delete Timeline Entry
-            </AlertDialogTitle>
+            <AlertDialogTitle>Delete Timeline Entry</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this timeline
-              entry? This action cannot be undone.
+              Are you sure you want to delete this timeline entry? This action
+              cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>
-              Cancel
-            </AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
@@ -381,6 +340,6 @@ export default function CallDetail() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }
