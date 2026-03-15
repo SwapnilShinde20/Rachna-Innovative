@@ -50,12 +50,19 @@ const PropertyCard = ({ property }) => {
       className="group relative h-80 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 block"
       to={`/buy/${property._id || property.id}`}
     >
-      {/* Background Image */}
-      <img
-        src={property.image}
-        alt={property.title}
-        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-      />
+      {/* Background Image structure */}
+      {property.image ? (
+        <img
+          src={property.image}
+          alt={property.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      ) : (
+        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col items-center justify-center text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-home opacity-50 mb-2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span className="text-sm font-semibold opacity-70">No Photo</span>
+        </div>
+      )}
 
       {/* Top Badge */}
       <div className="absolute top-4 left-4">

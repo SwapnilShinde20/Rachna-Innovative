@@ -107,7 +107,7 @@ const Favorites = () => {
                     property={{
                       ...property,
                       id: property._id,
-                      image: property.images?.[0] || "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=600",
+                      image: property.images?.[0] || null,
                       location: `${property.location || ''}, ${property.city || ''}`.replace(/^, |, $/g, ''),
                     }}
                   />

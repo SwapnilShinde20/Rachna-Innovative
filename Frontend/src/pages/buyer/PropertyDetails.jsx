@@ -318,9 +318,7 @@ const PropertyDetails = () => {
   }
   if (!property) return <div className="min-h-screen pt-20 text-center text-gray-500">Property not found.</div>;
 
-  const images = (property.images?.length ? property.images : []).concat(
-    Array(4).fill('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200')
-  ).slice(0, 4);
+  const images = property.images?.length > 0 ? property.images : [];
 
   const avgRating = reviews.length
     ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
@@ -630,39 +628,73 @@ const PropertyDetails = () => {
           <div className="flex-1 w-full min-w-0 space-y-7">
 
             {/* Image Gallery */}
-            <div className="h-[420px] w-full flex gap-3">
-              {/* Main Image */}
-              <div
-                className="w-1/2 md:w-3/5 h-full relative group overflow-hidden rounded-2xl cursor-zoom-in shadow-md"
-                onClick={() => openLightbox(0)}
-              >
-                <img src={images[0]} alt={property.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                  <Maximize2 size={28} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
+            {images.length > 0 && (
+              <div className="h-[420px] w-full flex gap-3">
+                {/* Main Image */}
+                <div
+                  className={`relative group overflow-hidden rounded-2xl cursor-zoom-in shadow-md ${images.length === 1 ? 'w-full h-full' : 'w-1/2 md:w-3/5 h-full'}`}
+                  onClick={() => openLightbox(0)}
+                >
+                  <img src={images[0]} alt={property.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                    <Maximize2 size={28} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
+                  </div>
                 </div>
-              </div>
 
-              {/* Mosaic */}
-              <div className="flex-1 flex flex-col gap-3 h-full">
-                <div className="h-1/2 flex gap-3 w-full">
-                  {[1, 2].map((i) => (
-                    <div key={i} className="w-1/2 h-full overflow-hidden rounded-2xl relative group cursor-zoom-in shadow-md" onClick={() => openLightbox(i)}>
-                      <img src={images[i]} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
-                    </div>
-                  ))}
-                </div>
-                <div className="h-1/2 w-full overflow-hidden rounded-2xl relative group cursor-zoom-in shadow-md" onClick={() => openLightbox(3)}>
-                  <img src={images[3]} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
-                  {images.length > 4 && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <span className="text-white font-bold text-lg">+{images.length - 4} more</span>
-                    </div>
-                  )}
+                {/* Mosaic */}
+                {images.length > 1 && (
+                  <div className="flex-1 flex flex-col gap-3 h-full">
+                    {images.length === 2 ? (
+                      <div className="h-full w-full overflow-hidden rounded-2xl relative group cursor-zoom-in shadow-md" onClick={() => openLightbox(1)}>
+                        <img src={images[1]} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
+                      </div>
+                    ) : images.length === 3 ? (
+                       <>
+                         <div className="h-1/2 w-full overflow-hidden rounded-2xl relative group cursor-zoom-in shadow-md" onClick={() => openLightbox(1)}>
+                            <img src={images[1]} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
+                         </div>
+                         <div className="h-1/2 w-full overflow-hidden rounded-2xl relative group cursor-zoom-in shadow-md" onClick={() => openLightbox(2)}>
+                            <img src={images[2]} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
+                         </div>
+                       </>
+                    ) : (
+                      <>
+                        <div className="h-1/2 flex gap-3 w-full">
+                          {[1, 2].map((i) => (
+                            <div key={i} className="w-1/2 h-full overflow-hidden rounded-2xl relative group cursor-zoom-in shadow-md" onClick={() => openLightbox(i)}>
+                              <img src={images[i]} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
+                            </div>
+                          ))}
+                        </div>
+                        <div className="h-1/2 w-full overflow-hidden rounded-2xl relative group cursor-zoom-in shadow-md" onClick={() => openLightbox(3)}>
+                          <img src={images[3]} alt="" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors" />
+                          {images.length > 4 && (
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                              <span className="text-white font-bold text-lg">+{images.length - 4} more</span>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {images.length === 0 && (
+              <div className="h-[420px] w-full bg-gray-200 rounded-2xl flex items-center justify-center text-gray-500 shadow-inner">
+                <div className="flex flex-col items-center">
+                  <Home size={64} className="mb-4 text-gray-400 opacity-50" />
+                  <span className="text-xl font-bold">No Photos Available</span>
+                  <span className="text-sm mt-1 text-gray-400">The seller hasn't uploaded any photos yet.</span>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">

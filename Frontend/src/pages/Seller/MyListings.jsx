@@ -77,7 +77,7 @@ export default function MyListings({ onAddProperty, onEditProperty }) {
   // Transform data for display
   const allProperties = rawProperties.map(p => ({
     id: p._id,
-    image: p.images && p.images[0] ? p.images[0] : "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
+    image: p.images && p.images[0] ? p.images[0] : null,
     title: p.title,
     location: [p.location, p.city].filter(Boolean).join(', ') || 'No location',
     price: `₹${p.price?.toLocaleString() || 0}`,
