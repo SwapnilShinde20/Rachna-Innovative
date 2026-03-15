@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DashboardHeader } from '../../components/admin/dashboard/DashboardHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/admin/ui/card';
 import { Button } from '../../components/admin/ui/button';
@@ -22,7 +22,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from '../../components/admin/ui/dialog';
-import { mockCMSPages } from '../../data/mockData';
+import { useQuery } from '@tanstack/react-query';
+import api from '../../lib/api';
 import {
   Plus,
   Pencil,
@@ -35,7 +36,12 @@ import {
 import { format } from 'date-fns';
 
 export default function CMSPagesPage() {
-  const [pages, setPages] = useState(mockCMSPages);
+  const { data: fetchedPages = [] } = useQuery({
+    queryKey: ['cmsPages'],
+    queryFn: async () => { const res = await api.get('/data/cms-pages'); return res.data; },
+  });
+  const [pages, setPages] = useState([]);
+  useEffect(() => { if (fetchedPages.length > 0) setPages(fetchedPages); }, [fetchedPages]);
   const [selectedPage, setSelectedPage] = useState(null);
   const [showEditor, setShowEditor] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -56,7 +62,7 @@ export default function CMSPagesPage() {
   const handleToggleActive = (pageId) => {
     setPages(
       pages.map((p) =>
-        p.id === pageId
+        p._id === pageId
           ? { ...p, isActive: !p.isActive, updatedAt: new Date().toISOString() }
           : p
       )
@@ -103,7 +109,7 @@ export default function CMSPagesPage() {
     } else if (selectedPage) {
       setPages(
         pages.map((p) =>
-          p.id === selectedPage.id
+          p._id === selectedPage._id
             ? { ...p, ...editForm, updatedAt: new Date().toISOString() }
             : p
         )
@@ -192,7 +198,7 @@ export default function CMSPagesPage() {
                 {sectionPages
                   .sort((a, b) => a.order - b.order)
                   .map((page) => (
-                    <TableRow key={page.id}>
+                    <TableRow key={page._id}>
                       <TableCell>
                         <GripVertical className="h-4 w-4 text-muted-foreground" />
                       </TableCell>
@@ -226,7 +232,7 @@ export default function CMSPagesPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => handleToggleActive(page.id)}
+                            onClick={() => handleToggleActive(page._id)}
                           >
                             {page.isActive ? (
                               <EyeOff className="h-4 w-4" />

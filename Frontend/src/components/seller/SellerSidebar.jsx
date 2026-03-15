@@ -1,35 +1,65 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useAuthStore } from "../../stores/authStore";
+import { Link, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Building2,
   Plus,
   Users,
   BarChart3,
-  MessageSquare,
+  Video,
   Settings,
   ChevronLeft,
   ChevronRight,
   LogOut,
   House,
-  X, // Added X icon for mobile close
+  X,
+  CircleUserRound,
+  Lock,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
 
-const menuItems = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "listings", label: "My Listings", icon: Building2 },
-  { id: "add", label: "Add Property", icon: Plus },
-  { id: "leads", label: "Leads", icon: Users },
-  { id: "analytics", label: "Analytics", icon: BarChart3 },
-  { id: "messages", label: "Messages", icon: MessageSquare },
-  { id: "settings", label: "Settings", icon: Settings },
+const allMenuItems = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, requiresApproval: false },
+  { id: "listings", label: "My Listings", icon: Building2, requiresApproval: true },
+  { id: "add", label: "Add Property", icon: Plus, requiresApproval: true },
+  { id: "leads", label: "Leads", icon: Users, requiresApproval: true },
+  { id: "analytics", label: "Analytics", icon: BarChart3, requiresApproval: true },
+  { id: "video-calls", label: "Video Calls", icon: Video, requiresApproval: true },
+  { id: "settings", label: "Settings", icon: Settings, requiresApproval: false },
 ];
 
 // Added isOpen and onClose props
 export function SellerSidebar({ activeItem, onItemClick, isOpen, onClose }) {
   const [collapsed, setCollapsed] = useState(false);
+  const { logout } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
+
+  const { data: seller } = useQuery({
+    queryKey: ['seller', 'me'],
+    queryFn: async () => {
+      const { data } = await api.get('/sellers/me');
+      return data;
+    },
+    retry: false
+  });
+
+  const isApproved = seller?.status === 'approved';
+
+  // Filter menu items based on approval status
+  const menuItems = allMenuItems.filter(item => {
+    if (item.requiresApproval && !isApproved) return false;
+    return true;
+  });
 
   // Helper to handle item click (close menu on mobile)
   const handleItemClick = (id) => {
@@ -91,22 +121,33 @@ export function SellerSidebar({ activeItem, onItemClick, isOpen, onClose }) {
       >
         <div className={cn("flex items-center gap-3", collapsed && "flex-col")}>
           <div className="relative">
-            <img
-              src="/assets/pravin.png"
-              alt="Seller"
-              className="h-10 w-10 rounded-full object-cover ring-2 ring-primary/20"
-            />
+            {seller?.logoUrl ? (
+              <img 
+                src={seller.logoUrl} 
+                alt="Company Logo" 
+                className="h-10 w-10 object-cover rounded-full ring-2 ring-primary/20 bg-white" 
+              />
+            ) : (
+              <CircleUserRound className="h-10 w-10 text-muted-foreground" strokeWidth={1.5} />
+            )}
             <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card bg-success" />
           </div>
 
           {!collapsed && (
             <div className="flex-1 overflow-hidden">
               <p className="truncate text-sm font-medium text-foreground">
-                Pravin Purav
+                {seller?.companyName || useAuthStore.getState().user?.name || 'Seller'}
               </p>
-              <p className="truncate text-xs text-muted-foreground">
-                Verified Agent
-              </p>
+              {isApproved ? (
+                <p className="truncate text-xs text-emerald-600 flex items-center gap-1">
+                  <ShieldCheck className="h-3 w-3" />
+                  Verified Agent
+                </p>
+              ) : (
+                <p className="truncate text-xs text-amber-600">
+                  Pending Approval
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -163,28 +204,23 @@ export function SellerSidebar({ activeItem, onItemClick, isOpen, onClose }) {
             variant="ghost"
             size="sm"
             className="mt-1 w-full justify-start text-muted-foreground hover:text-destructive"
-            asChild
+            onClick={handleLogout}
           >
-            <Link to="/">
-              <LogOut className="h-4 w-4" />
-              <span>Sign Out</span>
-            </Link>
+            <LogOut className="h-4 w-4" />
+            <span>Sign Out</span>
           </Button>
         )}
       </div>
       
-      {/* Mobile Only Sign Out (Icon only to save space or full width if needed) */}
       <div className="border-t border-border/50 p-3 lg:hidden">
          <Button
             variant="ghost"
             size="sm"
             className="w-full justify-start text-muted-foreground hover:text-destructive"
-            asChild
+            onClick={handleLogout}
           >
-            <Link to="/">
-              <LogOut className="h-4 w-4" />
-              <span>Sign Out</span>
-            </Link>
+            <LogOut className="h-4 w-4" />
+            <span>Sign Out</span>
           </Button>
       </div>
     </aside>

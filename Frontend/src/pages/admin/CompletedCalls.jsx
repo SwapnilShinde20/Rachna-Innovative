@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
-import { Eye, Clock, Video, CheckCircle } from "lucide-react";
+import { Eye, Clock, Video, CheckCircle, RefreshCw } from "lucide-react";
 
 import {
   Card,
@@ -9,9 +9,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+} from "../../components/admin/ui/card";
+import { Button } from "../../components/admin/ui/button";
+import { Input } from "../../components/admin/ui/input";
 import {
   Table,
   TableBody,
@@ -19,18 +19,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "../../components/admin/ui/table";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "../../components/admin/ui/select";
 
-import DealStatusBadge from "@/components/admin//video-calls/DealStatusBadge";
-import { mockVideoCalls } from "@/data/mock-video-calls";
+import DealStatusBadge from "../../components/admin/video-calls/DealStatusBadge";
 import { DashboardHeader } from "../../components/admin/dashboard/DashboardHeader";
+import { useQuery } from '@tanstack/react-query';
+import api from '../../lib/api';
 
 /**
  * Same labels as in types/video-calls
@@ -48,12 +49,26 @@ export default function CompletedCalls() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const filteredCalls = mockVideoCalls.filter((call) => {
+  const { data: calls = [], isLoading } = useQuery({
+    queryKey: ['completed-meetings'],
+    queryFn: async () => {
+      const res = await api.get('/admin/meetings/completed');
+      return res.data;
+    },
+    refetchInterval: 10000,
+  });
+
+  const filteredCalls = calls.filter((call) => {
+    const meetingTitle = call.title || 'Untitled Meeting';
+    const buyerName = call.buyerId?.name || call.buyerName || '';
+    const sellerName = call.sellerId?.name || call.sellerName || '';
+    const propertyRef = call.propertyId?.propertyId || 'N/A';
+    
     const matchesSearch =
-      call.meetingTitle.toLowerCase().includes(search.toLowerCase()) ||
-      call.buyerName.toLowerCase().includes(search.toLowerCase()) ||
-      call.sellerName.toLowerCase().includes(search.toLowerCase()) ||
-      call.propertyReference.toLowerCase().includes(search.toLowerCase());
+      meetingTitle.toLowerCase().includes(search.toLowerCase()) ||
+      buyerName.toLowerCase().includes(search.toLowerCase()) ||
+      sellerName.toLowerCase().includes(search.toLowerCase()) ||
+      propertyRef.toLowerCase().includes(search.toLowerCase());
 
     const matchesStatus =
       statusFilter === "all" || call.dealStatus === statusFilter;
@@ -62,25 +77,22 @@ export default function CompletedCalls() {
   });
 
   const stats = {
-    total: mockVideoCalls.length,
-    inDiscussion: mockVideoCalls.filter(
+    total: calls.length,
+    inDiscussion: calls.filter(
       (c) => c.dealStatus === "in-discussion"
     ).length,
-    negotiation: mockVideoCalls.filter(
+    negotiation: calls.filter(
       (c) => c.dealStatus === "negotiation"
     ).length,
-    closed: mockVideoCalls.filter(
+    closed: calls.filter(
       (c) => c.dealStatus === "deal-closed"
     ).length,
   };
 
   return (
     <div>
-            <DashboardHeader title="Completed Video Calls" subtitle="Manage post-call activities and track deal progress" />
+      <DashboardHeader title="Completed Video Calls" subtitle="Manage post-call activities and track deal progress" />
       <div className="p-6 space-y-6">
-        {/* Header */}
-        
-
         {/* Stats */}
         <div className="grid gap-4 md:grid-cols-4">
           <Card>
@@ -204,7 +216,14 @@ export default function CompletedCalls() {
                 </TableHeader>
 
                 <TableBody>
-                  {filteredCalls.length === 0 ? (
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="py-12 text-center text-muted-foreground">
+                        <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2" />
+                        Loading calls...
+                      </TableCell>
+                    </TableRow>
+                  ) : filteredCalls.length === 0 ? (
                     <TableRow>
                       <TableCell
                         colSpan={8}
@@ -216,20 +235,20 @@ export default function CompletedCalls() {
                   ) : (
                     filteredCalls.map((call) => (
                       <TableRow
-                        key={call.id}
+                        key={call._id}
                         className="hover:bg-muted/50"
                       >
                         <TableCell className="font-medium">
-                          {call.meetingTitle}
+                          {call.title || 'Untitled Meeting'}
                         </TableCell>
 
                         <TableCell>
                           <div>
                             <p className="font-medium">
-                              {call.buyerName}
+                              {call.buyerId?.name || call.buyerName || 'Unknown Buyer'}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {call.buyerEmail}
+                              {call.buyerId?.email || ''}
                             </p>
                           </div>
                         </TableCell>
@@ -237,27 +256,27 @@ export default function CompletedCalls() {
                         <TableCell>
                           <div>
                             <p className="font-medium">
-                              {call.sellerName}
+                              {call.sellerId?.name || call.sellerName || 'Unknown Seller'}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {call.sellerCompany}
+                              {call.sellerId?.companyName || ''}
                             </p>
                           </div>
                         </TableCell>
 
                         <TableCell className="font-mono text-sm">
-                          {call.propertyReference}
+                          {call.propertyId?.propertyId || 'N/A'}
                         </TableCell>
 
                         <TableCell>
                           {format(
-                            new Date(call.callDate),
+                            new Date(call.scheduledAt || new Date()),
                             "MMM dd, yyyy"
                           )}
                         </TableCell>
 
                         <TableCell>
-                          {call.duration} min
+                          {call.duration || 0} min
                         </TableCell>
 
                         <TableCell>
@@ -273,7 +292,7 @@ export default function CompletedCalls() {
                             size="sm"
                           >
                             <Link
-                              to={`/admin/videocalls/completed/${call.id}`}
+                              to={`/admin/videocalls/completed/${call._id}`}
                             >
                               <Eye className="mr-2 h-4 w-4" />
                               View Timeline

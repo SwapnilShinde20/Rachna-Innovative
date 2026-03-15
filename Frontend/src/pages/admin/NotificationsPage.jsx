@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/admin/ui/select';
-import { mockNotifications } from '../../data/mockData';
 import {
   Bell,
   Check,
@@ -23,6 +22,9 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../lib/api';
+import {  useEffect } from 'react';
 
 /* ---------------- TYPE CONFIG ---------------- */
 
@@ -36,7 +38,46 @@ const typeConfig = {
 export default function NotificationsPage() {
   const navigate = useNavigate();
   const [typeFilter, setTypeFilter] = useState('all');
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const { data: fetchedNotifications = [] } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: async () => { const res = await api.get('/data/notifications'); return res.data; },
+  });
+  const [notifications, setNotifications] = useState([]);
+  const queryClient = useQueryClient();
+
+  useEffect(() => { 
+    if (fetchedNotifications) setNotifications(fetchedNotifications); 
+  }, [fetchedNotifications]);
+
+  const markAsReadMutation = useMutation({
+    mutationFn: async (id) => {
+      const res = await api.put(`/data/notifications/${id}`, { isRead: true });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['notifications']);
+    }
+  });
+
+  const markAllAsReadMutation = useMutation({
+    mutationFn: async () => {
+      const res = await api.post('/data/notifications/read-all');
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['notifications']);
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id) => {
+      const res = await api.delete(`/data/notifications/${id}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['notifications']);
+    }
+  });
 
   const filteredNotifications = notifications.filter((notification) => {
     return typeFilter === 'all' || notification.type === typeFilter;
@@ -45,21 +86,27 @@ export default function NotificationsPage() {
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const handleMarkAsRead = (id) => {
+    // Optimistic UI update
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+      prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
     );
+    markAsReadMutation.mutate(id);
   };
 
   const handleMarkAllAsRead = () => {
+    // Optimistic UI update
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    markAllAsReadMutation.mutate();
   };
 
   const handleDelete = (id) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    // Optimistic UI update
+    setNotifications((prev) => prev.filter((n) => n._id !== id));
+    deleteMutation.mutate(id);
   };
 
   const handleNotificationClick = (notification) => {
-    handleMarkAsRead(notification.id);
+    handleMarkAsRead(notification._id);
     if (notification.link) {
       navigate(notification.link);
     }
@@ -164,7 +211,7 @@ export default function NotificationsPage() {
 
                 return (
                   <div
-                    key={notification.id}
+                    key={notification._id}
                     className={`flex items-start gap-4 p-4 rounded-lg border cursor-pointer transition-colors hover:bg-muted/50 ${
                       !notification.isRead
                         ? 'bg-primary/5 border-primary/20'
@@ -213,7 +260,7 @@ export default function NotificationsPage() {
                           variant="ghost"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleMarkAsRead(notification.id);
+                            handleMarkAsRead(notification._id);
                           }}
                         >
                           <Check className="h-4 w-4" />
@@ -226,7 +273,7 @@ export default function NotificationsPage() {
                         className="text-muted-foreground"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDelete(notification.id);
+                          handleDelete(notification._id);
                         }}
                       >
                         <Trash2 className="h-4 w-4" />

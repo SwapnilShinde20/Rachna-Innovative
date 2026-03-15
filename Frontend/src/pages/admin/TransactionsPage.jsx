@@ -20,7 +20,6 @@ import {
   TableRow,
 } from '../../components/admin/ui/table';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '../../components/admin/ui/sheet';
-import { mockTransactions } from '../../data/mockData';
 import {
   Search,
   Eye,
@@ -31,9 +30,14 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { useQuery } from '@tanstack/react-query';
+import api from '../../lib/api';
 
 export default function TransactionsPage() {
-  const [transactions] = useState(mockTransactions);
+  const { data: transactions = [], isLoading } = useQuery({
+    queryKey: ['transactions'],
+    queryFn: async () => { const res = await api.get('/data/transactions'); return res.data; },
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedTransaction, setSelectedTransaction] = useState(null);
@@ -41,9 +45,9 @@ export default function TransactionsPage() {
 
   const filteredTransactions = transactions.filter((txn) => {
     const matchesSearch =
-      txn.buyerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      txn.sellerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      txn.id.toLowerCase().includes(searchQuery.toLowerCase());
+      (txn.buyerName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (txn.sellerName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (txn._id || '').toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesStatus =
       statusFilter === 'all' || txn.status === statusFilter;
@@ -106,10 +110,11 @@ export default function TransactionsPage() {
     ];
 
     const rows = filteredTransactions.map((t) => [
-      t.id,
+      t._id,
       t.buyerName,
       t.sellerName,
       t.amount,
+      t.description || 'N/A',
       t.status,
       format(new Date(t.createdAt), 'yyyy-MM-dd'),
     ]);
@@ -227,6 +232,7 @@ export default function TransactionsPage() {
                 <TableHead>Buyer</TableHead>
                 <TableHead>Seller</TableHead>
                 <TableHead>Amount</TableHead>
+                <TableHead>Fee Type</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -234,11 +240,17 @@ export default function TransactionsPage() {
             </TableHeader>
             <TableBody>
               {filteredTransactions.map((txn) => (
-                <TableRow key={txn.id}>
-                  <TableCell className="font-mono">{txn.id}</TableCell>
+                <TableRow key={txn._id}>
+                  <TableCell className="font-mono text-xs">{txn._id.slice(-6)}</TableCell>
                   <TableCell>{txn.buyerName}</TableCell>
                   <TableCell>{txn.sellerName}</TableCell>
-                  <TableCell>{formatCurrency(txn.amount)}</TableCell>
+                  <TableCell className="font-semibold">{formatCurrency(txn.amount)}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="text-sm">{txn.description || 'Transaction'}</span>
+                      {txn.propertyTitle && <span className="text-xs text-muted-foreground truncate max-w-[150px]">{txn.propertyTitle}</span>}
+                    </div>
+                  </TableCell>
                   <TableCell>{getStatusBadge(txn.status)}</TableCell>
                   <TableCell>
                     {format(new Date(txn.createdAt), 'MMM dd, yyyy')}
@@ -271,13 +283,23 @@ export default function TransactionsPage() {
 
           {selectedTransaction && (
             <div className="mt-6 space-y-4">
-              <p><strong>ID:</strong> {selectedTransaction.id}</p>
+              <p><strong>ID:</strong> {selectedTransaction._id}</p>
               <p><strong>Buyer:</strong> {selectedTransaction.buyerName}</p>
               <p><strong>Seller:</strong> {selectedTransaction.sellerName}</p>
+              {selectedTransaction.propertyTitle && (
+                <p><strong>Property:</strong> {selectedTransaction.propertyTitle}</p>
+              )}
+              <p><strong>Type:</strong> {selectedTransaction.description || 'N/A'}</p>
               <p className="text-xl font-bold">
                 {formatCurrency(selectedTransaction.amount)}
               </p>
               {getStatusBadge(selectedTransaction.status)}
+              
+              {selectedTransaction.status === 'pending' && (
+                <div className="p-3 bg-amber-50 text-amber-700 text-sm rounded-lg border border-amber-200 mt-4">
+                  This transaction is pending. The buyer must complete payment via the integrated payment gateway to confirm this video tour fee.
+                </div>
+              )}
             </div>
           )}
         </SheetContent>

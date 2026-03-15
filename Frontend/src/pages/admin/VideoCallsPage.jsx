@@ -29,7 +29,8 @@ import {
 } from '../../components/admin/ui/select';
 import { Calendar } from '../../components/admin/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../../components/admin/ui/popover';
-import { mockVideoCallRequests, mockMeetings } from '../../data/mockData';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../lib/api';
 import { 
   Video, 
   Calendar as CalendarIcon, 
@@ -47,21 +48,34 @@ import { format } from 'date-fns';
 import { cn } from '../../lib/utils';
 
 const statusConfig = {
-  pending: { label: 'Pending', variant: 'secondary' },
-  approved: { label: 'Scheduled', variant: 'default' },
-  rejected: { label: 'Rejected', variant: 'destructive' },
+  requested: { label: 'Pending', variant: 'secondary' },
+  scheduled: { label: 'Scheduled', variant: 'default' },
+  ongoing: { label: 'Ongoing', variant: 'default' },
+  cancelled: { label: 'Rejected', variant: 'destructive' },
 };
 
 const meetingStatusConfig = {
   requested: { label: 'Requested', variant: 'secondary' },
   scheduled: { label: 'Scheduled', variant: 'default' },
+  ongoing: { label: 'Ongoing', variant: 'default' },
   in_progress: { label: 'In Progress', variant: 'default' },
   completed: { label: 'Completed', variant: 'outline' },
   cancelled: { label: 'Cancelled', variant: 'destructive' },
   no_show: { label: 'No Show', variant: 'destructive' },
+  missed: { label: 'Missed', variant: 'destructive' },
 };
 
+const generateZoomLink = () => `https://zoom.us/j/${Math.floor(Math.random() * 10000000000)}`; // Fallback only
+
 export default function VideoCallsPage() {
+  const queryClient = useQueryClient();
+  const { data: meetings = [] } = useQuery({
+    queryKey: ['meetings'],
+    queryFn: async () => { const res = await api.get('/data/meetings'); return res.data; },
+    refetchInterval: 10000,
+  });
+  // Video call requests are meetings with status 'requested', 'scheduled', or 'ongoing'
+  const videoCallRequests = meetings.filter(m => m.status === 'scheduled' || m.status === 'requested' || m.status === 'ongoing');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
@@ -70,11 +84,21 @@ export default function VideoCallsPage() {
   const [selectedTime, setSelectedTime] = useState('10:00');
   const [selectedDuration, setSelectedDuration] = useState('30');
 
-  const filteredRequests = mockVideoCallRequests.filter((request) => {
+  const updateMeetingMutation = useMutation({
+    mutationFn: async ({ id, data }) => {
+      const res = await api.put(`/data/meetings/${id}`, data);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['meetings']);
+    }
+  });
+
+  const filteredRequests = videoCallRequests.filter((request) => {
     const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
-    const matchesSearch = 
-      request.buyerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.sellerCompany.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      (request.buyerName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (request.sellerName || '').toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
 
@@ -84,16 +108,45 @@ export default function VideoCallsPage() {
   };
 
   const handleConfirmSchedule = () => {
-    if (selectedRequest && selectedDate) {
-      console.log('Scheduling meeting:', {
-        request: selectedRequest,
-        date: selectedDate,
-        time: selectedTime,
-        duration: selectedDuration,
+    if (selectedRequest && selectedDate && selectedTime) {
+      // Create new Date combining selectedDate and selectedTime
+      const timeParts = selectedTime.split(':');
+      const finalDateTime = new Date(selectedDate);
+      finalDateTime.setHours(parseInt(timeParts[0], 10), parseInt(timeParts[1], 10), 0, 0);
+
+      const meetingLink = generateZoomLink();
+
+      updateMeetingMutation.mutate({
+        id: selectedRequest._id,
+        data: {
+          scheduledAt: finalDateTime,
+          duration: parseInt(selectedDuration, 10),
+          status: 'scheduled',
+          // Do NOT send meetingLink here — the backend will create a real Zoom meeting
+        }
       });
+
       setIsScheduleOpen(false);
       setSelectedRequest(null);
     }
+  };
+
+  const handleRejectRequest = (request) => {
+    updateMeetingMutation.mutate({
+      id: request._id,
+      data: {
+        status: 'cancelled',
+      }
+    });
+  };
+
+  const handleCompleteCall = (request) => {
+    updateMeetingMutation.mutate({
+      id: request._id,
+      data: {
+        status: 'completed',
+      }
+    });
   };
 
   const handleJoinCall = (meetingLink) => {
@@ -102,9 +155,9 @@ export default function VideoCallsPage() {
     }
   };
 
-  const completedMeetings = mockMeetings.filter(m => m.status === 'completed');
-  const avgDuration = completedMeetings.length > 0 
-    ? Math.round(completedMeetings.reduce((acc, m) => acc + m.duration, 0) / completedMeetings.length)
+  const completedMeetings = meetings.filter(m => m.status === 'completed');
+  const avgDuration = completedMeetings.length > 0
+    ? Math.round(completedMeetings.reduce((acc, m) => acc + (m.duration || 0), 0) / completedMeetings.length)
     : 0;
 
   return (
@@ -121,7 +174,7 @@ export default function VideoCallsPage() {
                 <Clock className="h-5 w-5 text-warning" />
               </div>
               <div>
-                <div className="text-2xl font-bold">{mockVideoCallRequests.filter(r => r.status === 'pending').length}</div>
+                <div className="text-2xl font-bold">{videoCallRequests.filter(r => r.status === 'scheduled').length}</div>
                 <p className="text-sm text-muted-foreground">Pending Requests</p>
               </div>
             </div>
@@ -134,7 +187,7 @@ export default function VideoCallsPage() {
                 <CalendarIcon className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <div className="text-2xl font-bold">{mockMeetings.filter(m => m.status === 'scheduled').length}</div>
+                <div className="text-2xl font-bold">{meetings.filter(m => m.status === 'scheduled').length}</div>
                 <p className="text-sm text-muted-foreground">Scheduled</p>
               </div>
             </div>
@@ -180,9 +233,9 @@ export default function VideoCallsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="approved">Scheduled</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
+                  <SelectItem value="requested">Pending</SelectItem>
+                  <SelectItem value="scheduled">Scheduled</SelectItem>
+                  <SelectItem value="cancelled">Rejected</SelectItem>
                 </SelectContent>
               </Select>
               <div className="relative w-64">
@@ -218,7 +271,7 @@ export default function VideoCallsPage() {
                 </TableRow>
               ) : (
                 filteredRequests.map((request) => (
-                  <TableRow key={request.id}>
+                  <TableRow key={request._id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <User className="h-4 w-4 text-muted-foreground" />
@@ -233,27 +286,43 @@ export default function VideoCallsPage() {
                         <Building className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <p className="font-medium">{request.sellerName}</p>
-                          <p className="text-xs text-muted-foreground">{request.sellerCompany}</p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="max-w-xs truncate">{request.reason}</TableCell>
+                    <TableCell className="max-w-xs truncate">{request.title}</TableCell>
                     <TableCell>
-                      <Badge variant={statusConfig[request.status].variant}>
-                        {statusConfig[request.status].label}
+                      <Badge variant={statusConfig[request.status]?.variant || 'outline'}>
+                        {statusConfig[request.status]?.label || request.status}
                       </Badge>
                     </TableCell>
                     <TableCell>{format(new Date(request.createdAt), 'MMM dd, yyyy')}</TableCell>
                     <TableCell className="text-right">
-                      {request.status === 'pending' && (
+                      {request.status === 'requested' && (
                         <div className="flex items-center justify-end gap-2">
                           <Button size="sm" onClick={() => handleScheduleMeeting(request)}>
                             <CalendarIcon className="h-4 w-4 mr-1" />
                             Schedule
                           </Button>
-                          <Button size="sm" variant="ghost" className="text-destructive">
+                          <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleRejectRequest(request)}>
                             <XCircle className="h-4 w-4" />
                           </Button>
+                        </div>
+                      )}
+                      {(request.status === 'scheduled' || request.status === 'ongoing') && (
+                        <div className="flex items-center justify-end gap-2">
+                          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => handleJoinCall(request.meetingLink)}>
+                            <Play className="h-4 w-4 mr-1" />
+                            Join
+                          </Button>
+                          <Button size="sm" variant="outline" className="border-emerald-200 text-emerald-700 hover:bg-emerald-50" onClick={() => handleCompleteCall(request)}>
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Complete
+                          </Button>
+                          {request.status === 'scheduled' && (
+                            <Button size="sm" variant="ghost" className="text-destructive" onClick={() => handleRejectRequest(request)}>
+                              <XCircle className="h-4 w-4" />
+                            </Button>
+                          )}
                         </div>
                       )}
                     </TableCell>
@@ -283,8 +352,8 @@ export default function VideoCallsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockMeetings.map((meeting) => (
-                <TableRow key={meeting.id}>
+              {meetings.map((meeting) => (
+                <TableRow key={meeting._id}>
                   <TableCell className="font-medium">{meeting.title}</TableCell>
                   <TableCell>
                     <div className="text-sm">
@@ -294,8 +363,8 @@ export default function VideoCallsPage() {
                   </TableCell>
                   <TableCell>{meeting.duration} min</TableCell>
                   <TableCell>
-                    <Badge variant={meetingStatusConfig[meeting.status].variant}>
-                      {meetingStatusConfig[meeting.status].label}
+                    <Badge variant={meetingStatusConfig[meeting.status]?.variant || 'outline'}>
+                      {meetingStatusConfig[meeting.status]?.label || meeting.status}
                     </Badge>
                   </TableCell>
                   <TableCell>{format(new Date(meeting.scheduledAt), 'MMM dd, yyyy HH:mm')}</TableCell>
@@ -333,7 +402,7 @@ export default function VideoCallsPage() {
           <DialogHeader>
             <DialogTitle>Schedule Video Call</DialogTitle>
             <DialogDescription>
-              Set up a meeting between {selectedRequest?.buyerName} and {selectedRequest?.sellerCompany}
+              Set up a meeting between {selectedRequest?.buyerName} and {selectedRequest?.sellerName}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">

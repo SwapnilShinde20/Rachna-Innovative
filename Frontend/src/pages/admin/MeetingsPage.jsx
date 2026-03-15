@@ -21,7 +21,9 @@ import {
   DialogFooter,
 } from '../../components/admin/ui/dialog';
 import { Textarea } from '../../components/admin/ui/textarea';
-import { mockMeetings } from '../../data/mockData';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '../../lib/api';
+import { useToast } from '../../hooks/use-toast';
 import {
   Calendar,
   Clock,
@@ -48,15 +50,26 @@ import {
 const statusConfig = {
   requested: { label: 'Requested', variant: 'secondary' },
   scheduled: { label: 'Scheduled', variant: 'default' },
+  ongoing: { label: 'Ongoing', variant: 'default' },
   in_progress: { label: 'In Progress', variant: 'default' },
   completed: { label: 'Completed', variant: 'outline' },
   cancelled: { label: 'Cancelled', variant: 'destructive' },
   no_show: { label: 'No Show', variant: 'destructive' },
+  missed: { label: 'Missed', variant: 'destructive' },
 };
 
 /* -------------------- COMPONENT -------------------- */
 
 export default function MeetingsPage() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: meetings = [], isLoading } = useQuery({
+    queryKey: ['meetings'],
+    queryFn: async () => { const res = await api.get('/data/meetings'); return res.data; },
+    refetchInterval: 10000,
+  });
+
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedMeeting, setSelectedMeeting] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -67,10 +80,48 @@ export default function MeetingsPage() {
   const monthEnd = endOfMonth(currentMonth);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
+  /* -------------------- MUTATIONS -------------------- */
+
+  const cancelMeetingMutation = useMutation({
+    mutationFn: async (meetingId) => {
+      const res = await api.put(`/data/meetings/${meetingId}`, { status: 'cancelled' });
+      return res.data;
+    },
+    onSuccess: (updatedMeeting) => {
+      queryClient.invalidateQueries({ queryKey: ['meetings'] });
+      setSelectedMeeting(updatedMeeting);
+      toast({ title: 'Meeting cancelled' });
+    },
+    onError: (error) => {
+      toast({ title: 'Failed to cancel meeting', description: error.message, variant: 'destructive' });
+    }
+  });
+
+  const addNoteMutation = useMutation({
+    mutationFn: async ({ meetingId, content }) => {
+      const res = await api.post(`/admin/meetings/${meetingId}/notes`, { content });
+      return res.data;
+    },
+    onSuccess: (newAddedNote) => {
+      queryClient.invalidateQueries({ queryKey: ['meetings'] });
+      // Update local state so details dialog reflects new note instantly
+      setSelectedMeeting((prev) => ({
+        ...prev,
+        notes: [...(prev.notes || []), newAddedNote]
+      }));
+      setIsNotesOpen(false);
+      setNewNote('');
+      toast({ title: 'Note added successfully' });
+    },
+    onError: (error) => {
+      toast({ title: 'Failed to add note', description: error.message, variant: 'destructive' });
+    }
+  });
+
   /* -------------------- HELPERS -------------------- */
 
   const getMeetingsForDay = (day) => {
-    return mockMeetings.filter((meeting) =>
+    return meetings.filter((meeting) =>
       isSameDay(new Date(meeting.scheduledAt), day)
     );
   };
@@ -81,21 +132,19 @@ export default function MeetingsPage() {
   };
 
   const handleAddNote = () => {
-    console.log('Adding note:', newNote, 'to meeting:', selectedMeeting?.id);
-    setIsNotesOpen(false);
-    setNewNote('');
+    if (!selectedMeeting) return;
+    addNoteMutation.mutate({ meetingId: selectedMeeting._id, content: newNote });
   };
 
   const handleCancelMeeting = (meeting) => {
-    console.log('Cancelling meeting:', meeting.id);
-    setIsDetailsOpen(false);
+    cancelMeetingMutation.mutate(meeting._id);
   };
 
-  const scheduledMeetings = mockMeetings.filter(
+  const scheduledMeetings = meetings.filter(
     (m) => m.status === 'scheduled'
   );
 
-  const todayMeetings = mockMeetings.filter((m) =>
+  const todayMeetings = meetings.filter((m) =>
     isSameDay(new Date(m.scheduledAt), new Date())
   );
 
@@ -118,7 +167,7 @@ export default function MeetingsPage() {
                 <Calendar className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <div className="text-2xl font-bold">{mockMeetings.length}</div>
+                <div className="text-2xl font-bold">{meetings.length}</div>
                 <p className="text-sm text-muted-foreground">Total Meetings</p>
               </div>
             </div>
@@ -163,7 +212,7 @@ export default function MeetingsPage() {
               </div>
               <div>
                 <div className="text-2xl font-bold">
-                  {mockMeetings.filter((m) => m.status === 'completed').length}
+                  {meetings.filter((m) => m.status === 'completed').length}
                 </div>
                 <p className="text-sm text-muted-foreground">Completed</p>
               </div>
@@ -243,7 +292,7 @@ export default function MeetingsPage() {
                       <div className="space-y-0.5 overflow-hidden">
                         {dayMeetings.slice(0, 2).map((meeting) => (
                           <div
-                            key={meeting.id}
+                            key={meeting._id}
                             onClick={() => handleViewDetails(meeting)}
                             className="text-xs p-1 rounded bg-primary/10 text-primary truncate cursor-pointer hover:bg-primary/20"
                           >
@@ -285,8 +334,8 @@ export default function MeetingsPage() {
                 </TableHeader>
 
                 <TableBody>
-                  {mockMeetings.map((meeting) => (
-                    <TableRow key={meeting.id}>
+                  {meetings.map((meeting) => (
+                    <TableRow key={meeting._id}>
                       <TableCell className="font-medium">
                         {meeting.title}
                       </TableCell>
@@ -300,9 +349,9 @@ export default function MeetingsPage() {
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={statusConfig[meeting.status].variant}
+                          variant={statusConfig[meeting.status]?.variant || 'outline'}
                         >
-                          {statusConfig[meeting.status].label}
+                          {statusConfig[meeting.status]?.label || meeting.status}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
@@ -378,10 +427,30 @@ export default function MeetingsPage() {
               </div>
 
               <Badge
-                variant={statusConfig[selectedMeeting.status].variant}
+                variant={statusConfig[selectedMeeting.status]?.variant || 'outline'}
               >
-                {statusConfig[selectedMeeting.status].label}
+                {statusConfig[selectedMeeting.status]?.label || selectedMeeting.status}
               </Badge>
+
+              {/* Show Notes */}
+              {selectedMeeting.notes && selectedMeeting.notes.length > 0 && (
+                <div className="mt-4 border-t pt-4">
+                  <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                    <FileText className="h-4 w-4" /> Internal Notes
+                  </h4>
+                  <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                    {selectedMeeting.notes.map((note, index) => (
+                      <div key={index} className="bg-muted p-3 rounded-md text-sm border">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="font-medium">{note.authorName}</span>
+                          <span className="text-xs text-muted-foreground">{format(new Date(note.createdAt), 'MMM d, h:mm a')}</span>
+                        </div>
+                        <p className="text-foreground whitespace-pre-wrap">{note.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

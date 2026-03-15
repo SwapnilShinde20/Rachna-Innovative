@@ -13,6 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+import { formatDistanceToNow, format } from "date-fns";
+import { Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -35,68 +39,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const leads = [
-  {
-    id: "1",
-    name: "Sarah Johnson",
-    email: "sarah.j@email.com",
-    phone: "+1 (305) 555-0123",
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face",
-    property: "Sunset Villa",
-    date: "Dec 28, 2024",
-    method: "Email",
-    status: "new",
-  },
-  {
-    id: "2",
-    name: "Michael Chen",
-    email: "m.chen@email.com",
-    phone: "+1 (305) 555-0456",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
-    property: "Ocean View Apartment",
-    date: "Dec 27, 2024",
-    method: "Phone",
-    status: "contacted",
-  },
-  {
-    id: "3",
-    name: "Emily Davis",
-    email: "emily.d@email.com",
-    phone: "+1 (305) 555-0789",
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
-    property: "Modern Loft",
-    date: "Dec 26, 2024",
-    method: "Form",
-    status: "closed",
-  },
-  {
-    id: "4",
-    name: "Robert Martinez",
-    email: "r.martinez@email.com",
-    phone: "+1 (305) 555-0321",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=face",
-    property: "Garden Estate",
-    date: "Dec 25, 2024",
-    method: "Email",
-    status: "new",
-  },
-  {
-    id: "5",
-    name: "Jennifer Lopez",
-    email: "j.lopez@email.com",
-    phone: "+1 (305) 555-0654",
-    avatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=face",
-    property: "Luxury Penthouse",
-    date: "Dec 24, 2024",
-    method: "Phone",
-    status: "contacted",
-  },
-];
+
 
 const statusStyles = {
   new: { label: "New", variant: "new" },
@@ -106,6 +49,14 @@ const statusStyles = {
 
 export default function Leads() {
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const { data: leads = [], isLoading } = useQuery({
+    queryKey: ['seller-leads'],
+    queryFn: async () => {
+      const { data } = await api.get('/sellers/me/leads');
+      return data;
+    }
+  });
 
   const filteredLeads =
     statusFilter === "all"
@@ -199,13 +150,22 @@ export default function Leads() {
 
         <CardContent>
           <div className="overflow-x-auto">
+            {isLoading ? (
+              <div className="flex h-32 items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : filteredLeads.length === 0 ? (
+              <div className="flex h-32 items-center justify-center text-muted-foreground">
+                No leads found matching your criteria.
+              </div>
+            ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Buyer</TableHead>
                   <TableHead>Property</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead>Contact</TableHead>
+                  <TableHead>Method</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -213,33 +173,34 @@ export default function Leads() {
 
               <TableBody>
                 {filteredLeads.map((lead, index) => {
-                  const status = statusStyles[lead.status];
+                  const status = statusStyles[lead.status] || statusStyles.new;
 
                   return (
                     <TableRow
-                      key={lead.id}
+                      key={lead._id}
                       className="group"
                       style={{ animationDelay: `${index * 50}ms` }}
                     >
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <img
-                            src={lead.avatar}
-                            alt={lead.name}
+                            src={lead.buyerAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(lead.buyerName)}&background=random`}
+                            alt={lead.buyerName}
                             className="h-9 w-9 rounded-full object-cover"
                           />
                           <div>
-                            <p className="font-medium">{lead.name}</p>
+                            <p className="font-medium">{lead.buyerName}</p>
                             <p className="text-sm text-muted-foreground">
-                              {lead.email}
+                              {/* Displaying static email since lead model doesn't explicitly track buyer email yet */}
+                              Inquired User
                             </p>
                           </div>
                         </div>
                       </TableCell>
 
-                      <TableCell>{lead.property}</TableCell>
-                      <TableCell>{lead.date}</TableCell>
-                      <TableCell>{lead.method}</TableCell>
+                      <TableCell>{lead.propertyName}</TableCell>
+                      <TableCell>{format(new Date(lead.createdAt), 'MMM d, yyyy')}</TableCell>
+                      <TableCell>Direct</TableCell>
 
                       <TableCell>
                         <Badge variant={status.variant}>{status.label}</Badge>
@@ -266,7 +227,7 @@ export default function Leads() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem>View Details</DropdownMenuItem>
-                              <DropdownMenuItem>Send Email</DropdownMenuItem>
+                              <DropdownMenuItem>Send Message</DropdownMenuItem>
                               <DropdownMenuItem>Call</DropdownMenuItem>
                               <DropdownMenuItem>
                                 Mark as Closed
@@ -280,6 +241,7 @@ export default function Leads() {
                 })}
               </TableBody>
             </Table>
+            )}
           </div>
         </CardContent>
       </Card>

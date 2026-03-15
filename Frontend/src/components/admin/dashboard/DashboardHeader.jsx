@@ -9,10 +9,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../../ui/dropdown-menu';
-import { mockNotifications } from '../../../data/mockData';
+import { useQuery } from '@tanstack/react-query';
+import api from '../../../lib/api';
 
 export function DashboardHeader({ title, subtitle }) {
-  const unreadCount = mockNotifications.filter((n) => !n.isRead).length;
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: async () => { const res = await api.get('/data/notifications'); return res.data; },
+  });
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
     <header className="h-16 border-b bg-background flex items-center justify-between px-6">
@@ -50,9 +55,9 @@ export function DashboardHeader({ title, subtitle }) {
             <DropdownMenuLabel>Notifications</DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            {mockNotifications.slice(0, 5).map((notif) => (
+            {notifications.slice(0, 5).map((notif) => (
               <DropdownMenuItem
-                key={notif.id}
+                key={notif._id}
                 className="flex flex-col items-start gap-1 py-3"
               >
                 <span className="font-medium text-sm">{notif.title}</span>
@@ -72,3 +77,4 @@ export function DashboardHeader({ title, subtitle }) {
     </header>
   );
 }
+

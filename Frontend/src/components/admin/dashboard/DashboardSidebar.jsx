@@ -12,9 +12,10 @@ import {
   LogOut,
   ChevronDown,
   UserCheck,
-  DollarSign,
   Star,
   Layout,
+  Briefcase,
+  DollarSign,
 } from "lucide-react";
 import { Button } from "../../../components/admin/ui/button";
 import {
@@ -25,9 +26,9 @@ import {
 import { useState } from "react";
 
 const adminNavItems = [
-  { label: "Dashboard", icon: Home, href: "/admin" },
   { label: "Sellers", icon: UserCheck, href: "/admin/sellers" },
   { label: "Users", icon: Users, href: "/admin/users" },
+  { label: "Service Requests", icon: Briefcase, href: "/admin/service-requests"},
   { label: "Transactions", icon: DollarSign, href: "/admin/transactions" },
   { label: "Reviews", icon: Star, href: "/admin/reviews" },
   {

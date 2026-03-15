@@ -29,7 +29,8 @@ import {
   SelectValue,
 } from '../../components/admin/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/admin/ui/tabs';
-import { mockBlogPosts } from '../../data/mockData';
+import { useQuery } from '@tanstack/react-query';
+import api from '../../lib/api';
 import {
   FileText,
   Plus,
@@ -67,8 +68,12 @@ export default function BlogPage() {
   const [excerpt, setExcerpt] = useState('');
   const [seoTitle, setSeoTitle] = useState('');
   const [seoDescription, setSeoDescription] = useState('');
+  const { data: blogPosts = [], isLoading } = useQuery({
+    queryKey: ['blogPosts'],
+    queryFn: async () => { const res = await api.get('/data/blog-posts'); return res.data; },
+  });
 
-  const filteredPosts = mockBlogPosts.filter((post) => {
+  const filteredPosts = blogPosts.filter((post) => {
     const matchesStatus = statusFilter === 'all' || post.status === statusFilter;
     const matchesSearch =
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -121,24 +126,24 @@ export default function BlogPage() {
   };
 
   const handleApprove = (post) => {
-    console.log('Approving post:', post.id);
+    console.log('Approving post:', post._id);
   };
 
   const handleReject = (post) => {
-    console.log('Rejecting post:', post.id);
+    console.log('Rejecting post:', post._id);
   };
 
   const handleToggleFeatured = (post) => {
-    console.log('Toggling featured:', post.id);
+    console.log('Toggling featured:', post._id);
   };
 
   const handleArchive = (post) => {
-    console.log('Archiving post:', post.id);
+    console.log('Archiving post:', post._id);
   };
 
-  const pendingPosts = mockBlogPosts.filter((p) => p.status === 'pending_approval');
-  const publishedPosts = mockBlogPosts.filter((p) => p.status === 'published');
-  const draftPosts = mockBlogPosts.filter((p) => p.status === 'draft');
+  const pendingPosts = blogPosts.filter((p) => p.status === 'pending_approval');
+  const publishedPosts = blogPosts.filter((p) => p.status === 'published');
+  const draftPosts = blogPosts.filter((p) => p.status === 'draft');
 
   return (
    <div>
@@ -149,7 +154,7 @@ export default function BlogPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-4">
-            <div className="text-2xl font-bold">{mockBlogPosts.length}</div>
+            <div className="text-2xl font-bold">{blogPosts.length}</div>
             <p className="text-sm text-muted-foreground">Total Posts</p>
           </CardContent>
         </Card>
@@ -236,7 +241,7 @@ export default function BlogPage() {
                     </TableRow>
                   ) : (
                     filteredPosts.map((post) => (
-                      <TableRow key={post.id}>
+                      <TableRow key={post._id}>
                         <TableCell>
                           <div>
                             <p className="font-medium">{post.title}</p>
@@ -323,7 +328,7 @@ export default function BlogPage() {
                 </p>
               ) : (
                 pendingPosts.map((post) => (
-                  <div key={post.id} className="p-4 border rounded-lg mb-4">
+                  <div key={post._id} className="p-4 border rounded-lg mb-4">
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="font-medium">{post.title}</h3>

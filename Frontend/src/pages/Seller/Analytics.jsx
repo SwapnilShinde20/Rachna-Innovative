@@ -1,4 +1,4 @@
-import { TrendingUp, Eye, MessageSquare, DollarSign, Building2, ArrowUp, ArrowDown } from "lucide-react";
+import { TrendingUp, Eye, MessageSquare, DollarSign, Building2, ArrowUp, ArrowDown, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -8,27 +8,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const monthlyData = [
-  { month: "Jul", views: 1200, leads: 45, revenue: 18000 },
-  { month: "Aug", views: 1450, leads: 52, revenue: 22500 },
-  { month: "Sep", views: 1680, leads: 58, revenue: 24000 },
-  { month: "Oct", views: 1520, leads: 48, revenue: 21000 },
-  { month: "Nov", views: 1890, leads: 67, revenue: 28500 },
-  { month: "Dec", views: 2100, leads: 78, revenue: 32000 },
-];
-
-const topProperties = [
-  { name: "Sunset Villa", views: 445, leads: 24, trend: "up" },
-  { name: "Garden Estate", views: 312, leads: 18, trend: "up" },
-  { name: "Ocean View Apartment", views: 234, leads: 12, trend: "down" },
-  { name: "Luxury Penthouse", views: 198, leads: 11, trend: "up" },
-  { name: "Modern Loft", views: 156, leads: 8, trend: "down" },
-];
-
-const maxViews = Math.max(...monthlyData.map(d => d.views));
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
 
 export default function Analytics() {
+  const { data: analytics, isLoading } = useQuery({
+    queryKey: ['seller-analytics-full'],
+    queryFn: async () => {
+      const { data } = await api.get('/sellers/me/analytics/full');
+      return data;
+    }
+  });
+
+  const monthlyData = analytics?.monthlyData || [];
+  const topProperties = analytics?.topProperties || [];
+  const kpis = analytics?.kpis || {};
+  const maxViews = monthlyData.length > 0 ? Math.max(...monthlyData.map(d => d.views)) : 1;
+  const maxRevenue = monthlyData.length > 0 ? Math.max(...monthlyData.map(d => d.revenue)) : 35000;
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[calc(100vh-10rem)] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -59,13 +64,13 @@ export default function Analytics() {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Eye className="h-6 w-6" />
               </div>
-              <Badge variant="success" className="gap-1">
-                <ArrowUp className="h-3 w-3" />
-                23%
+              <Badge variant={kpis.viewsGrowth?.startsWith('-') ? 'destructive' : 'success'} className="gap-1">
+                {kpis.viewsGrowth?.startsWith('-') ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />}
+                {kpis.viewsGrowth?.replace('-', '')}
               </Badge>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">Total Views</p>
-            <p className="text-3xl font-bold">9,840</p>
+            <p className="text-3xl font-bold">{kpis.totalViews?.toLocaleString() || 0}</p>
           </CardContent>
         </Card>
         <Card className="animate-slide-up" style={{ animationDelay: "50ms" }}>
@@ -74,13 +79,13 @@ export default function Analytics() {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/10 text-success">
                 <MessageSquare className="h-6 w-6" />
               </div>
-              <Badge variant="success" className="gap-1">
-                <ArrowUp className="h-3 w-3" />
-                18%
+              <Badge variant={kpis.leadsGrowth?.startsWith('-') ? 'destructive' : 'success'} className="gap-1">
+                {kpis.leadsGrowth?.startsWith('-') ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />}
+                {kpis.leadsGrowth?.replace('-', '')}
               </Badge>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">Total Leads</p>
-            <p className="text-3xl font-bold">348</p>
+            <p className="text-3xl font-bold">{kpis.totalLeads?.toLocaleString() || 0}</p>
           </CardContent>
         </Card>
         <Card className="animate-slide-up" style={{ animationDelay: "100ms" }}>
@@ -89,13 +94,13 @@ export default function Analytics() {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-warning/10 text-warning">
                 <TrendingUp className="h-6 w-6" />
               </div>
-              <Badge variant="warning" className="gap-1">
-                <ArrowDown className="h-3 w-3" />
-                2%
+              <Badge variant={kpis.conversionGrowth?.startsWith('-') ? 'destructive' : 'warning'} className="gap-1">
+                {kpis.conversionGrowth?.startsWith('-') ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />}
+                {kpis.conversionGrowth?.replace('-', '')}
               </Badge>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">Conversion Rate</p>
-            <p className="text-3xl font-bold">3.5%</p>
+            <p className="text-3xl font-bold">{kpis.conversionRate}</p>
           </CardContent>
         </Card>
         <Card className="animate-slide-up" style={{ animationDelay: "150ms" }}>
@@ -104,13 +109,13 @@ export default function Analytics() {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-accent-foreground">
                 <DollarSign className="h-6 w-6" />
               </div>
-              <Badge variant="success" className="gap-1">
-                <ArrowUp className="h-3 w-3" />
-                34%
+              <Badge variant={kpis.revenueGrowth?.startsWith('-') ? 'destructive' : 'success'} className="gap-1">
+                {kpis.revenueGrowth?.startsWith('-') ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />}
+                {kpis.revenueGrowth?.replace('-', '')}
               </Badge>
             </div>
             <p className="mt-4 text-sm text-muted-foreground">Revenue</p>
-            <p className="text-3xl font-bold">$146K</p>
+            <p className="text-3xl font-bold">${kpis.revenue ? (kpis.revenue / 1000).toFixed(1) + 'K' : 0}</p>
           </CardContent>
         </Card>
       </div>
@@ -169,27 +174,33 @@ export default function Analytics() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {topProperties.map((property, index) => (
-              <div key={property.name} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-xs font-medium">
-                    {index + 1}
-                  </span>
-                  <div>
-                    <p className="text-sm font-medium">{property.name}</p>
-                    <p className="text-xs text-muted-foreground">{property.views} views</p>
+            {topProperties.length > 0 ? (
+              topProperties.map((property, index) => (
+                <div key={property.name} className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent text-xs font-medium">
+                      {index + 1}
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium">{property.name}</p>
+                      <p className="text-xs text-muted-foreground">{property.views} views</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">{property.leads}</span>
+                    {property.trend === "up" ? (
+                      <ArrowUp className="h-4 w-4 text-success" />
+                    ) : (
+                      <ArrowDown className="h-4 w-4 text-destructive" />
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">{property.leads}</span>
-                  {property.trend === "up" ? (
-                    <ArrowUp className="h-4 w-4 text-success" />
-                  ) : (
-                    <ArrowDown className="h-4 w-4 text-destructive" />
-                  )}
-                </div>
+              ))
+            ) : (
+              <div className="text-center text-sm text-muted-foreground py-8">
+                No property data available.
               </div>
-            ))}
+            )}
           </CardContent>
         </Card>
       </div>
@@ -204,16 +215,20 @@ export default function Analytics() {
         </CardHeader>
         <CardContent>
           <div className="flex items-end gap-4 overflow-x-auto pb-2">
-            {monthlyData.map((data) => (
-              <div key={data.month} className="flex min-w-[60px] flex-1 flex-col items-center gap-2">
-                <p className="text-sm font-medium">${(data.revenue / 1000).toFixed(0)}K</p>
-                <div
-                  className="w-full rounded-t-lg bg-gradient-to-t from-success/50 to-success/20 transition-all duration-500 hover:from-success/60 hover:to-success/30"
-                  style={{ height: `${(data.revenue / 35000) * 100}px` }}
-                />
-                <span className="text-xs text-muted-foreground">{data.month}</span>
-              </div>
-            ))}
+            {monthlyData.length > 0 ? (
+              monthlyData.map((data) => (
+                <div key={data.month} className="flex min-w-[60px] flex-1 flex-col items-center gap-2">
+                  <p className="text-sm font-medium">${(Math.round(data.revenue / 1000) || 0)}K</p>
+                  <div
+                    className="w-full rounded-t-lg bg-gradient-to-t from-success/50 to-success/20 transition-all duration-500 hover:from-success/60 hover:to-success/30"
+                    style={{ height: `${maxRevenue > 0 ? (data.revenue / maxRevenue) * 100 : 0}px` }}
+                  />
+                  <span className="text-xs text-muted-foreground">{data.month}</span>
+                </div>
+              ))
+            ) : (
+              <div className="w-full text-center text-sm text-muted-foreground py-4">No revenue data available</div>
+            )}
           </div>
         </CardContent>
       </Card>

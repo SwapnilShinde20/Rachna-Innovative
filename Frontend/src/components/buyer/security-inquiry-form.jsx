@@ -13,7 +13,10 @@ import {
 } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Card } from '@/components/ui/card'
-import { AlertCircle, CheckCircle2, Upload } from 'lucide-react'
+import { AlertCircle, CheckCircle2, Upload, Loader2 } from 'lucide-react'
+import { useMutation } from '@tanstack/react-query'
+import api from '../../lib/api'
+import { toast } from 'sonner'
 
 export default function SecurityInquiryForm() {
   const [formData, setFormData] = useState({
@@ -105,27 +108,42 @@ export default function SecurityInquiryForm() {
     }
   }
 
+  const submitMutation = useMutation({
+    mutationFn: async (data) => {
+      const payload = {
+        ...data,
+        serviceCategory: 'Security',
+        files: [] 
+      };
+      const res = await api.post('/service-requests', payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      setSubmitted(true)
+      toast.success('Security inquiry submitted successfully');
+      setTimeout(() => {
+        setFormData({
+          fullName: '',
+          email: '',
+          phone: '',
+          type: 'Individual',
+          subject: '',
+          description: '',
+          files: [],
+          consent: false,
+        })
+        setSubmitted(false)
+      }, 3000)
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'Failed to submit inquiry');
+    }
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault()
-
     if (!validateForm()) return
-
-    console.log('Form submitted:', formData)
-    setSubmitted(true)
-
-    setTimeout(() => {
-      setFormData({
-        fullName: '',
-        email: '',
-        phone: '',
-        type: 'Individual',
-        subject: '',
-        description: '',
-        files: [],
-        consent: false,
-      })
-      setSubmitted(false)
-    }, 3000)
+    submitMutation.mutate(formData);
   }
 
   if (submitted) {
@@ -313,8 +331,9 @@ export default function SecurityInquiryForm() {
         )}
 
         {/* Submit */}
-        <Button type="submit" size="lg" className="w-full">
-          Submit Inquiry
+        <Button type="submit" size="lg" className="w-full flex items-center justify-center gap-2" disabled={submitMutation.isPending}>
+          {submitMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+          {submitMutation.isPending ? 'Submitting...' : 'Submit Inquiry'}
         </Button>
       </form>
     </Card>

@@ -109,7 +109,7 @@ export default function LoginPage() {
             </form>
 
             <p className="text-xs text-muted-foreground mt-4 text-center">
-              Demo: admin@rachna.com / admin123
+              Demo: admin@rachna.com / password123
             </p>
           </CardContent>
         </Card>

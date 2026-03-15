@@ -1,23 +1,24 @@
-import { TrendingUp, Eye, MessageSquare } from "lucide-react";
+import { TrendingUp, Eye, MessageSquare, Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-const analyticsData = [
-  { month: "Jan", views: 120, inquiries: 24 },
-  { month: "Feb", views: 180, inquiries: 32 },
-  { month: "Mar", views: 240, inquiries: 45 },
-  { month: "Apr", views: 200, inquiries: 38 },
-  { month: "May", views: 320, inquiries: 56 },
-  { month: "Jun", views: 280, inquiries: 48 },
-];
-
-const maxViews = Math.max(...analyticsData.map((d) => d.views));
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
 
 export function AnalyticsPanel() {
+  const { data: analytics, isLoading } = useQuery({
+    queryKey: ['seller-analytics'],
+    queryFn: async () => {
+      const { data } = await api.get('/sellers/me/analytics');
+      return data;
+    }
+  });
+
+  const analyticsData = analytics?.chartData || [];
+  const maxViews = analyticsData.length > 0 ? Math.max(...analyticsData.map((d) => d.views)) : 1;
   return (
     <Card className="animate-slide-up" style={{ animationDelay: "400ms" }}>
       <CardHeader className="pb-2">
@@ -28,15 +29,21 @@ export function AnalyticsPanel() {
       </CardHeader>
 
       <CardContent>
-        {/* Mini Stats */}
-        <div className="mb-6 grid grid-cols-2 gap-4">
+        {isLoading ? (
+          <div className="flex h-48 items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <>
+            {/* Mini Stats */}
+            <div className="mb-6 grid grid-cols-2 gap-4">
           <div className="rounded-xl bg-accent p-3">
             <div className="flex items-center gap-2 text-accent-foreground">
               <Eye className="h-4 w-4" />
               <span className="text-xs font-medium">Monthly Views</span>
             </div>
-            <p className="mt-1 text-2xl font-semibold text-foreground">1,847</p>
-            <p className="text-xs text-success">+23% from last month</p>
+            <p className="mt-1 text-2xl font-semibold text-foreground">{analytics?.totalViews?.toLocaleString() || 0}</p>
+            <p className="text-xs text-success">{analytics?.viewsGrowth || '+0%'}</p>
           </div>
 
           <div className="rounded-xl bg-accent p-3">
@@ -44,8 +51,8 @@ export function AnalyticsPanel() {
               <MessageSquare className="h-4 w-4" />
               <span className="text-xs font-medium">Inquiries</span>
             </div>
-            <p className="mt-1 text-2xl font-semibold text-foreground">243</p>
-            <p className="text-xs text-success">+18% from last month</p>
+            <p className="mt-1 text-2xl font-semibold text-foreground">{analytics?.totalInquiries?.toLocaleString() || 0}</p>
+            <p className="text-xs text-success">{analytics?.inquiriesGrowth || '+0%'}</p>
           </div>
         </div>
 
@@ -108,6 +115,8 @@ export function AnalyticsPanel() {
             </span>
           </div>
         </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );

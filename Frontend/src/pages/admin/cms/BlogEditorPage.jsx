@@ -14,7 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../../components/admin/ui/select';
-import { mockBlogPosts } from '../../../data/mockData';
+import { useQuery } from '@tanstack/react-query';
+import api from '../../../lib/api';
 import { ArrowLeft, Save, Eye, Globe, Image as ImageIcon, X } from 'lucide-react';
 
 const mockCategories = [
@@ -48,9 +49,14 @@ export default function BlogEditorPage() {
   const [seoDescription, setSeoDescription] = useState('');
   const [featuredImage, setFeaturedImage] = useState('');
 
+  const { data: blogPosts = [] } = useQuery({
+    queryKey: ['blogPosts'],
+    queryFn: async () => { const res = await api.get('/data/blog-posts'); return res.data; },
+  });
+
   useEffect(() => {
-    if (!isNew && id) {
-      const post = mockBlogPosts.find(p => p.id === id);
+    if (!isNew && id && blogPosts.length > 0) {
+      const post = blogPosts.find(p => p._id === id);
       if (post) {
         setTitle(post.title);
         setSlug(post.slug);
@@ -62,7 +68,7 @@ export default function BlogEditorPage() {
         setFeaturedImage(post.featuredImage || '');
       }
     }
-  }, [id, isNew]);
+  }, [id, isNew, blogPosts]);
 
   const generateSlug = (title) => {
     return title

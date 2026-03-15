@@ -101,16 +101,71 @@ const RadioItem = ({ label, name, value, selectedValue, onChange }) => {
 };
 
 // Receive isOpen and onClose props
-const Sidebar = ({ isOpen, onClose }) => {
+const Sidebar = ({ isOpen, onClose, filters, onFilterChange }) => {
+  // Sync internal state if filters prop changes (reset scenario)
   const [priceRange, setPriceRange] = useState("custom");
-  const [minPrice, setMinPrice] = useState(30);
-  const [maxPrice, setMaxPrice] = useState(60);
+  const [minPrice, setMinPrice] = useState(filters?.minPrice || 0);
+  const [maxPrice, setMaxPrice] = useState(filters?.maxPrice || 50000000);
+  
   const sliderRef = useRef(null);
-  const MIN_GAP = 20; // minimum difference between minPrice and maxPrice
+  const MIN_GAP = 100000; 
 
   const MIN = 0;
-  const MAX = 100;
+  const MAX = 50000000; // 50 Million scale
 
+  const formatPrice = (price) => {
+    if (price >= 1000000) return `$${(price / 1000000).toFixed(1)}M`;
+    if (price >= 1000) return `$${(price / 1000).toFixed(0)}k`;
+    return `$${price}`;
+  };
+
+  const handleLocationChange = (e) => {
+      onFilterChange({ location: e.target.value });
+  };
+
+  const handleTypeChange = (type, checked) => {
+      let newTypes = filters?.type ? [...filters.type] : [];
+      if (checked) {
+          newTypes.push(type);
+      } else {
+          newTypes = newTypes.filter(t => t !== type);
+      }
+      onFilterChange({ type: newTypes });
+  };
+
+  const handleAmenitiesChange = (amenity) => {
+      let newAmenities = filters?.amenities ? [...filters.amenities] : [];
+      if (newAmenities.includes(amenity)) {
+          newAmenities = newAmenities.filter(a => a !== amenity);
+      } else {
+          newAmenities.push(amenity);
+      }
+      onFilterChange({ amenities: newAmenities });
+  };
+
+  const handlePriceRangeChange = (value) => {
+      setPriceRange(value);
+      let min = 0, max = 50000000;
+      if (value === 'under-1m') { max = 1000000; }
+      else if (value === '1m-5m') { min = 1000000; max = 5000000; }
+      else if (value === 'more-than-5m') { min = 5000000; max = 50000000; }
+      
+      if (value !== 'custom') {
+        setMinPrice(min);
+        setMaxPrice(max);
+        onFilterChange({ minPrice: min, maxPrice: max });
+      }
+  };
+
+  const handleCustomPriceChange = (min, max) => {
+      // Debounce could be good here but strict requirements say "not working". 
+      // Let's pass directly for responsiveness, the parent useQuery debounce might handle it if we added one, 
+      // but Purchase.jsx query key updates immediately.
+      // Since we added keepPreviousData, immediate update is fine UX-wise.
+      onFilterChange({ minPrice: min, maxPrice: max });
+  }
+
+  // Slider Logic for Custom Price
   const startDrag = (e, type) => {
     e.preventDefault();
 
@@ -122,15 +177,20 @@ const Sidebar = ({ isOpen, onClose }) => {
       const percent = Math.max(0, Math.min(1, x / rect.width));
       const value = Math.round(percent * MAX);
 
+      let newMin = minPrice;
+      let newMax = maxPrice;
+
       if (type === "min") {
-        // Enforce: min must be at least MIN_GAP less than max
         if (value <= maxPrice - MIN_GAP) {
           setMinPrice(value);
+          newMin = value;
+          if (priceRange === 'custom') handleCustomPriceChange(newMin, newMax);
         }
       } else {
-        // Enforce: max must be at least MIN_GAP more than min
         if (value >= minPrice + MIN_GAP) {
           setMaxPrice(value);
+          newMax = value;
+          if (priceRange === 'custom') handleCustomPriceChange(newMin, newMax);
         }
       }
     };
@@ -166,11 +226,14 @@ const Sidebar = ({ isOpen, onClose }) => {
         {/* Main Header */}
         <div className="flex items-center justify-between mb-6 px-1 pb-4 border-b-2 border-neutral-200">
           <h2 className="text-sm font-semibold text-neutral-800">
-            Custom Filter
+            Filters
           </h2>
 
           <div className="flex items-center gap-3">
-            <button className="text-brandBlue-500 text-sm font-regular hover:font-medium">
+            <button 
+                className="text-brandBlue-500 text-sm font-regular hover:font-medium"
+                onClick={() => onFilterChange({ type: [], minPrice: 0, maxPrice: 100000000, location: "", amenities: [] })}
+            >
               Clear all
             </button>
             {/* Mobile Close Button */}
@@ -185,11 +248,25 @@ const Sidebar = ({ isOpen, onClose }) => {
 
         {/* Location Section */}
         <div className="mb-6 pb-1 border-b-2 border-neutral-200">
-          <FilterHeader title="Location" />
-          <div className="px-1">
-            <CheckboxItem label="Mumbai, India" defaultChecked={true} />
-            <CheckboxItem label="Pune, India" />
-          </div>
+          <div className="flex items-center justify-between bg-neutral-50 px-3 py-2 rounded-full mb-3">
+            <div className="flex items-center gap-2 text-gray-700">
+            <MapPin size={20} className="text-neutral-800" />
+            <input
+                placeholder="Location"
+                value={filters?.location || ""}
+                onChange={handleLocationChange}
+                className="placeholder-neutral-400 text-sm outline-none bg-inherit w-full focus:text-neutral-500"
+            />
+            </div>
+            {filters?.location && (
+                <div 
+                    className="bg-white rounded-full p-0.5 w-[25px] h-[25px] cursor-pointer shadow-sm border border-neutral-200 flex items-center justify-center"
+                    onClick={() => onFilterChange({ location: "" })}
+                >
+                    <X size={14} className="text-neutral-800" />
+                </div>
+            )}
+        </div>
         </div>
 
         {/* Price Range Section */}
@@ -198,26 +275,26 @@ const Sidebar = ({ isOpen, onClose }) => {
           <div className="px-1">
             <RadioItem
               name="price"
-              value="under-1000"
-              label="Under $1000"
+              value="under-1m"
+              label="Under $1M"
               selectedValue={priceRange}
-              onChange={setPriceRange}
+              onChange={handlePriceRangeChange}
             />
 
             <RadioItem
               name="price"
-              value="1000-15000"
-              label="$1000 - $15000"
+              value="1m-5m"
+              label="$1M - $5M"
               selectedValue={priceRange}
-              onChange={setPriceRange}
+              onChange={handlePriceRangeChange}
             />
 
             <RadioItem
               name="price"
-              value="more-than-15000"
-              label="More than $15000"
+              value="more-than-5m"
+              label="More than $5M"
               selectedValue={priceRange}
-              onChange={setPriceRange}
+              onChange={handlePriceRangeChange}
             />
 
             <RadioItem
@@ -225,7 +302,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               value="custom"
               label="Custom"
               selectedValue={priceRange}
-              onChange={setPriceRange}
+              onChange={handlePriceRangeChange}
             />
 
             {/* Compact Slider (show only when Custom selected) */}
@@ -254,7 +331,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     onMouseDown={(e) => startDrag(e, "min")}
                   >
                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-gray-500 text-xs font-medium py-0.5 px-1.5 rounded-full border-2 border-neutral-200 shadow-sm whitespace-nowrap">
-                      ${minPrice}k
+                      {formatPrice(minPrice)}
                     </div>
                   </div>
 
@@ -265,7 +342,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     onMouseDown={(e) => startDrag(e, "max")}
                   >
                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-gray-500 text-xs font-medium py-0.5 px-1.5 rounded-full border-2 border-neutral-200 shadow-sm whitespace-nowrap">
-                      ${maxPrice}k
+                      {formatPrice(maxPrice)}
                     </div>
                   </div>
                 </div>
@@ -274,60 +351,15 @@ const Sidebar = ({ isOpen, onClose }) => {
           </div>
         </div>
 
-        {/* Land Area Section */}
-        <div className="mb-6 pb-4 border-b-2 border-neutral-200">
-  <FilterHeader title="Land Area" />
-
-  <div className="flex gap-6 px-1 my-5">
-    {/* Min Input */}
-    <div className="relative flex-1">
-      <input
-        type="text"
-        inputMode="numeric"
-        pattern="[0-9]*"
-        placeholder="Min"
-        className="w-full border border-neutral-200 rounded-md px-3 py-3 text-xs text-gray-600 placeholder-neutral-400 focus:outline-none"
-        onChange={(e) => {
-          const value = e.target.value.replace(/\D/g, "");
-          e.target.value = value;
-        }}
-      />
-      <span className="absolute right-2 top-3.5 text-[10px] text-neutral-400">
-        sq ft
-      </span>
-    </div>
-
-    {/* Max Input */}
-    <div className="relative flex-1">
-      <input
-        type="text"
-        inputMode="numeric"
-        pattern="[0-9]*"
-        placeholder="Max"
-        className="w-full border border-neutral-200 rounded-md px-3 py-3 text-xs text-gray-600 placeholder-neutral-400 focus:outline-none"
-        onChange={(e) => {
-          const value = e.target.value.replace(/\D/g, "");
-          e.target.value = value;
-        }}
-      />
-      <span className="absolute right-2 top-3.5 text-[10px] text-neutral-400">
-        sq ft
-      </span>
-    </div>
-  </div>
-</div>
-
-
         {/* Type Of Place Section */}
         <div className="mb-6  pb-2 border-b-2 border-neutral-200">
           <FilterHeader title="Type Of Place" />
           <div className="px-1">
-            <CheckboxItem label="Bungalow" checked={true} />
-            <CheckboxItem label="Resorts/Hotels" checked={false} />
-            <CheckboxItem label="Apartment" checked={true} />
-            <CheckboxItem label="Agricultural Land" checked={false} />
-            <CheckboxItem label="Manufacturing Industry" checked={false} />
-            <CheckboxItem label="Land for Industry" checked={false} />
+            <CheckboxItem label="Bungalow" onChange={(c) => handleTypeChange('Bungalow', c)} />
+            <CheckboxItem label="Resorts/Hotels" onChange={(c) => handleTypeChange('Resort', c)} />
+            <CheckboxItem label="Apartment" onChange={(c) => handleTypeChange('Apartment', c)} />
+            <CheckboxItem label="Agricultural Land" onChange={(c) => handleTypeChange('Land', c)} />
+            <CheckboxItem label="Manufacturing Industry" onChange={(c) => handleTypeChange('Industrial', c)} />
           </div>
         </div>
 
@@ -335,15 +367,19 @@ const Sidebar = ({ isOpen, onClose }) => {
         <div className="mb-6 pb-8 border-b-2 border-neutral-200">
           <FilterHeader title="Amenities" />
           <div className="flex flex-wrap gap-2 px-1">
-            <button className="bg-brandBlue-500 text-white text-sm px-4 py-1.5 rounded-[6px]  ">
-              Garden
-            </button>
-            <button className="bg-white text-neutral-500 text-sm px-4 py-1.5 rounded-[6px] border border-neutral-200">
-              Gym
-            </button>
-            <button className="bg-white text-neutral-500 text-sm px-4 py-1.5 rounded-[6px] border border-neutral-200 ">
-              Garage
-            </button>
+            {['Garden', 'Gym', 'Garage', 'Pool', 'Wi-Fi', 'Parking'].map((amenity) => (
+                <button 
+                    key={amenity}
+                    onClick={() => handleAmenitiesChange(amenity)}
+                    className={`text-sm px-4 py-1.5 rounded-[6px] border transition-colors ${
+                        filters?.amenities?.includes(amenity)
+                        ? "bg-brandBlue-500 text-white border-brandBlue-500" 
+                        : "bg-white text-neutral-500 border-neutral-200 hover:border-brandBlue-300"
+                    }`}
+                >
+                    {amenity}
+                </button>
+            ))}
           </div>
         </div>
       </aside>

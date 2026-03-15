@@ -17,54 +17,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "../stores/authStore";
 
-// Featured properties data
-const featuredProperties = [
-  {
-    id: "1",
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
-    title: "Sunset Villa",
-    location: "Miami Beach, FL",
-    price: "$4,500",
-    rating: 4.9,
-    type: "Villa",
-    beds: 4,
-    baths: 3,
-  },
-  {
-    id: "2",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop",
-    title: "Ocean View Apartment",
-    location: "Key Biscayne, FL",
-    price: "$3,200",
-    rating: 4.8,
-    type: "Apartment",
-    beds: 3,
-    baths: 2,
-  },
-  {
-    id: "3",
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=600&fit=crop",
-    title: "Modern Loft",
-    location: "Downtown Miami, FL",
-    price: "$2,800",
-    rating: 4.7,
-    type: "Loft",
-    beds: 2,
-    baths: 2,
-  },
-  {
-    id: "4",
-    image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&h=600&fit=crop",
-    title: "Garden Estate",
-    location: "Coral Gables, FL",
-    price: "$5,800",
-    rating: 5.0,
-    type: "Estate",
-    beds: 5,
-    baths: 4,
-  },
-];
+  import { useQuery } from "@tanstack/react-query";
+  import api from "@/lib/api";
+
+  // Featured properties data
+  // const featuredProperties = []; // We will use data from API
+
+
 
 // Why choose us features
 const features = [
@@ -145,6 +106,25 @@ const testimonials = [
 ];
 
 const LandingPage = () => {
+  const { user, isAuthenticated } = useAuthStore();
+  const { data: featuredProperties = [], isLoading } = useQuery({
+    queryKey: ['featured-properties'],
+    queryFn: async () => {
+      const { data } = await api.get('/properties');
+      return data.slice(0, 4).map(p => ({
+          id: p._id,
+          image: p.images && p.images[0] ? p.images[0] : "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop",
+          title: p.title,
+          location: `${p.location}, ${p.city}`,
+          price: `₹${p.price.toLocaleString()}`,
+          rating: 4.5, // Mock rating for now
+          type: p.type,
+          beds: p.bedrooms,
+          baths: p.bathrooms,
+      }));
+    }
+  });
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
@@ -169,15 +149,25 @@ const LandingPage = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/buy">Buyer</Link>
-            </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/dashboard">Seller</Link>
-            </Button>
-            <Button size="sm" asChild>
-              <Link to="/admin/login">Admin</Link>
-            </Button>
+            {isAuthenticated && user ? (
+              user.role === 'seller' ? (
+                <Button size="sm" asChild>
+                  <Link to="/dashboard">Go to Dashboard</Link>
+                </Button>
+              ) : user.role === 'admin' ? (
+                <Button size="sm" asChild>
+                  <Link to="/admin">Admin Dashboard</Link>
+                </Button>
+              ) : (
+                <Button size="sm" asChild>
+                  <Link to="/buy">Go to Buy</Link>
+                </Button>
+              )
+            ) : (
+              <Button size="sm" asChild>
+                <Link to="/login">Sign In / Sign Up</Link>
+              </Button>
+            )}
           </div>
         </div>
       </nav>

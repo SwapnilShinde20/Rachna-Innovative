@@ -14,7 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../../components/admin/ui/select';
-import { mockCMSPages } from '../../../data/mockData';
+import { useQuery } from '@tanstack/react-query';
+import api from '../../../lib/api';
 import { ArrowLeft, Save, Eye, Globe, Plus, Trash2, GripVertical } from 'lucide-react';
 
 export default function PageEditorPage() {
@@ -30,9 +31,14 @@ export default function PageEditorPage() {
   const [seoDescription, setSeoDescription] = useState('');
   const [contentBlocks, setContentBlocks] = useState([]);
 
+  const { data: cmsPages = [] } = useQuery({
+    queryKey: ['cmsPages'],
+    queryFn: async () => { const res = await api.get('/data/cms-pages'); return res.data; },
+  });
+
   useEffect(() => {
-    if (!isNew && id) {
-      const page = mockCMSPages.find(p => p.id === id);
+    if (!isNew && id && cmsPages.length > 0) {
+      const page = cmsPages.find(p => p._id === id);
       if (page) {
         setTitle(page.title);
         setSlug(page.slug);
@@ -42,7 +48,7 @@ export default function PageEditorPage() {
         setSeoDescription(page.seoDescription || '');
       }
     }
-  }, [id, isNew]);
+  }, [id, isNew, cmsPages]);
 
   const generateSlug = (title) => {
     return title

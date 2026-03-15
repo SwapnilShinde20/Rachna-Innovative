@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../components/admin/ui/select';
-import { mockAnalytics } from '../../data/mockData';
 import {
   TrendingUp,
   Users,
@@ -35,6 +34,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import { useQuery } from '@tanstack/react-query';
+import api from '../../lib/api';
 
 /* Chart Data */
 const sellersGrowthData = [
@@ -57,27 +58,45 @@ const meetingsPerMonthData = [
   { month: 'Jan', meetings: 92 },
 ];
 
-const callCompletionData = [
-  {
-    name: 'Completed',
-    value: mockAnalytics.completedMeetings,
-    color: 'hsl(142, 76%, 36%)',
-  },
-  {
-    name: 'Cancelled',
-    value: mockAnalytics.cancelledMeetings,
-    color: 'hsl(0, 84%, 60%)',
-  },
-  {
-    name: 'Scheduled',
-    value: mockAnalytics.scheduledMeetings,
-    color: 'hsl(217, 91%, 60%)',
-  },
-];
-
 export default function AnalyticsPage() {
+  const { data: analytics, isLoading } = useQuery({
+    queryKey: ['analytics'],
+    queryFn: async () => {
+      const [sellersRes, meetingsRes, transactionsRes] = await Promise.all([
+        api.get('/sellers'),
+        api.get('/data/meetings'),
+        api.get('/data/transactions'),
+      ]);
+      const sellers = sellersRes.data;
+      const meetings = meetingsRes.data;
+      const completedMeetings = meetings.filter(m => m.status === 'completed');
+      const avgDuration = completedMeetings.length > 0
+        ? Math.round(completedMeetings.reduce((s, m) => s + (m.duration || 0), 0) / completedMeetings.length)
+        : 0;
+      return {
+        totalSellers: sellers.length,
+        verifiedSellers: sellers.filter(s => s.status === 'approved').length,
+        totalMeetings: meetings.length,
+        completedMeetings: completedMeetings.length,
+        cancelledMeetings: meetings.filter(m => m.status === 'cancelled').length,
+        scheduledMeetings: meetings.filter(m => m.status === 'scheduled').length,
+        avgCallDuration: avgDuration,
+        totalBuyers: transactionsRes.data.length,
+        conversionRate: meetings.length > 0 ? Math.round((completedMeetings.length / meetings.length) * 100) : 0,
+        topSellers: sellers.slice(0, 5).map(s => ({ id: s._id, name: s.companyName })),
+      };
+    },
+  });
+
+  const callCompletionData = analytics ? [
+    { name: 'Completed', value: analytics.completedMeetings, color: 'hsl(142, 76%, 36%)' },
+    { name: 'Cancelled', value: analytics.cancelledMeetings, color: 'hsl(0, 84%, 60%)' },
+    { name: 'Scheduled', value: analytics.scheduledMeetings, color: 'hsl(217, 91%, 60%)' },
+  ] : [];
   const [dateRange, setDateRange] = useState('6m');
   const [sellerFilter, setSellerFilter] = useState('all');
+
+  if (isLoading || !analytics) return <div className="p-10 text-center text-muted-foreground">Loading analytics...</div>;
 
   return (
    <div>
@@ -108,7 +127,7 @@ export default function AnalyticsPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Sellers</SelectItem>
-            {mockAnalytics.topSellers.map((seller) => (
+            {analytics.topSellers.map((seller) => (
               <SelectItem key={seller.id} value={seller.id}>
                 {seller.name}
               </SelectItem>
@@ -125,7 +144,7 @@ export default function AnalyticsPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Total Sellers</p>
                 <div className="text-3xl font-bold">
-                  {mockAnalytics.totalSellers}
+                  {analytics.totalSellers}
                 </div>
                 <div className="flex items-center text-sm text-success mt-1">
                   <ArrowUpRight className="h-4 w-4 mr-1" />
@@ -147,12 +166,12 @@ export default function AnalyticsPage() {
                   Verified Sellers
                 </p>
                 <div className="text-3xl font-bold">
-                  {mockAnalytics.verifiedSellers}
+                  {analytics.verifiedSellers}
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">
                   {Math.round(
-                    (mockAnalytics.verifiedSellers /
-                      mockAnalytics.totalSellers) *
+                    (analytics.verifiedSellers /
+                      analytics.totalSellers) *
                       100
                   )}
                   % approval rate
@@ -173,7 +192,7 @@ export default function AnalyticsPage() {
                   Total Meetings
                 </p>
                 <div className="text-3xl font-bold">
-                  {mockAnalytics.totalMeetings}
+                  {analytics.totalMeetings}
                 </div>
                 <div className="flex items-center text-sm text-success mt-1">
                   <ArrowUpRight className="h-4 w-4 mr-1" />
@@ -195,7 +214,7 @@ export default function AnalyticsPage() {
                   Avg Call Duration
                 </p>
                 <div className="text-3xl font-bold">
-                  {mockAnalytics.avgCallDuration}m
+                  {analytics.avgCallDuration}m
                 </div>
                 <div className="flex items-center text-sm text-destructive mt-1">
                   <ArrowDownRight className="h-4 w-4 mr-1" />
@@ -265,7 +284,7 @@ export default function AnalyticsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center p-6 bg-muted/50 rounded-lg">
               <div className="text-4xl font-bold text-primary">
-                {mockAnalytics.totalBuyers}
+                {analytics.totalBuyers}
               </div>
               <p className="text-sm text-muted-foreground mt-1">
                 Total Inquiries
@@ -273,8 +292,8 @@ export default function AnalyticsPage() {
             </div>
             <div className="text-center p-6 bg-muted/50 rounded-lg">
               <div className="text-4xl font-bold text-info">
-                {mockAnalytics.scheduledMeetings +
-                  mockAnalytics.completedMeetings}
+                {analytics.scheduledMeetings +
+                  analytics.completedMeetings}
               </div>
               <p className="text-sm text-muted-foreground mt-1">
                 Converted to Meetings
@@ -282,7 +301,7 @@ export default function AnalyticsPage() {
             </div>
             <div className="text-center p-6 bg-muted/50 rounded-lg">
               <div className="text-4xl font-bold text-success">
-                {mockAnalytics.conversionRate}%
+                {analytics.conversionRate}%
               </div>
               <p className="text-sm text-muted-foreground mt-1">
                 Inquiry → Meeting Rate

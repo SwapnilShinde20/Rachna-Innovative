@@ -11,8 +11,11 @@ import {
 
 const statusConfig = {
   active: { label: "Active", variant: "active" },
-  pending: { label: "Pending", variant: "pending" },
+  pending: { label: "Pending Review", variant: "pending" },
+  approved: { label: "Approved", variant: "active" },
+  rejected: { label: "Rejected", variant: "sold" },
   sold: { label: "Sold", variant: "sold" },
+  pending_review: { label: "Pending Review", variant: "pending" },
 };
 
 export function PropertyCard({
@@ -25,8 +28,10 @@ export function PropertyCard({
   baths,
   sqft,
   delay = 0,
+  onDelete,
+  onEdit,
 }) {
-  const statusInfo = statusConfig[status];
+  const statusInfo = statusConfig[status] || statusConfig.pending;
 
   return (
     <Card
@@ -61,6 +66,7 @@ export function PropertyCard({
             size="icon"
             variant="secondary"
             className="h-8 w-8 bg-card/90 backdrop-blur-sm"
+            onClick={onEdit}
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -95,11 +101,11 @@ export function PropertyCard({
                 <Eye className="mr-2 h-4 w-4" />
                 View Details
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={onEdit}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit Listing
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive">
+              <DropdownMenuItem className="text-destructive" onClick={onDelete}>
                 <Trash2 className="mr-2 h-4 w-4" />
                 Remove
               </DropdownMenuItem>
